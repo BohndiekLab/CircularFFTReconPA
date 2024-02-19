@@ -1,21 +1,24 @@
 PATH_BASE = "F:/fft_recon_project/"
+
+
+def get_path(data_set=None, data=None):
+    if data_set is None:
+        data_set = "calibration"
+    if data is None:
+        data = "exp"
+
+    return f"{PATH_BASE}/data/{data_set}/{data}/"
+
+
+def get_recon_path(data_set=None, data=None, algorithm=None):
+    if data_set is None:
+        data_set = "calibration"
+    if data is None:
+        data = "exp"
+    if algorithm is None:
+        algorithm = "bp"
+
+    return f"{PATH_BASE}/data/{data_set}/recons/{algorithm}/{data}/"
+
+
 PATH_IPASC_FILE = f"{PATH_BASE}/ipasc_file.hdf5"
-PATH_CAL_EXP = f"{PATH_BASE}/data/calibration/exp/"
-PATH_CAL_P0 = f"{PATH_BASE}/data/calibration/p0/"
-PATH_CAL_SIM = f"{PATH_BASE}/data/calibration/sim/"
-PATH_CAL_SIM_RAW = f"{PATH_BASE}/data/calibration/sim_raw/"
-PATH_CAL_REC_BP_EXP = f"{PATH_BASE}/data/calibration/recons/bp/exp/"
-PATH_CAL_REC_BP_SIM = f"{PATH_BASE}/data/calibration/recons/bp/sim/"
-PATH_CAL_REC_BP_SIM_RAW = f"{PATH_BASE}/data/calibration/recons/bp/sim_raw/"
-PATH_CAL_REC_FFT_EXP = f"{PATH_BASE}/data/calibration/recons/fft/exp/"
-PATH_CAL_REC_FFT_SIM = f"{PATH_BASE}/data/calibration/recons/fft/sim/"
-PATH_CAL_REC_FFT_SIM_RAW = f"{PATH_BASE}/data/calibration/recons/fft/sim_raw/"
-PATH_CAL_REC_ITTR_EXP = f"{PATH_BASE}/data/calibration/recons/ittr/exp/"
-PATH_CAL_REC_ITTR_SIM = f"{PATH_BASE}/data/calibration/recons/ittr/sim/"
-PATH_CAL_REC_ITTR_SIM_RAW = f"{PATH_BASE}/data/calibration/recons/ittr/sim_raw/"
-PATH_CAL_REC_MB_EXP = f"{PATH_BASE}/data/calibration/recons/mb/exp/"
-PATH_CAL_REC_MB_SIM = f"{PATH_BASE}/data/calibration/recons/mb/sim/"
-PATH_CAL_REC_MB_SIM_RAW = f"{PATH_BASE}/data/calibration/recons/mb/sim_raw/"
-PATH_CAL_REC_TR_EXP = f"{PATH_BASE}/data/calibration/recons/tr/exp/"
-PATH_CAL_REC_TR_SIM = f"{PATH_BASE}/data/calibration/recons/tr/sim/"
-PATH_CAL_REC_TR_SIM_RAW = f"{PATH_BASE}/data/calibration/recons/tr/sim_raw/"
