@@ -10,7 +10,6 @@ for scan in SCANS:
 
     data = PAData.from_hdf5(path)
     print(data.get_wavelengths())
-    print(data.get_speed_of_sound())
     exit()
     raw_data = data.get_time_series().raw_data
     print(np.shape(raw_data))

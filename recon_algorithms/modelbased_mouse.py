@@ -32,7 +32,7 @@ def reconstruct(path, sound_speed=1535):
 
 times = []
 # reconstruct sim
-for file in glob.glob(get_path("mice", "exp") + "/*.npy"):
+for file in [glob.glob(get_path("mice", "exp") + "/*.npy")[-1]]:
     print(file)
     save_file_path = file.replace("exp", "recons/mb/exp")
     t = time.time()

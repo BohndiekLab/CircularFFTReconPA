@@ -33,7 +33,7 @@ for file in glob.glob(get_path("mice", "exp") + "/*.npy"):
     print(file)
     save_file_path = file.replace("exp", "recons/bp/exp")
     t = time.time()
-    recon = reconstruct(file).T
+    recon = reconstruct(file)
     times.append(time.time() - t)
     np.save(save_file_path, recon)
 times = np.asarray(times)

@@ -3,7 +3,7 @@ from matplotlib.patches import Rectangle
 
 
 def add_histogram_colorbar(ax, data, width=None, height=None, colormap=None, label=None,
-                           vmin=None, vmax=None):
+                           vmin=None, vmax=None, min_label=None, max_label=None):
 
     ydim, xdim = np.shape(data)
 
@@ -19,6 +19,12 @@ def add_histogram_colorbar(ax, data, width=None, height=None, colormap=None, lab
         vmin = np.min(data)
     if vmax is None:
         vmax = np.max(data)
+    if min_label is None:
+        min_label = "min"
+    if max_label is None:
+        max_label = "max"
+
+    bar_height = int(20 / 300 * ydim)
 
     baseline = ydim - 25
     leftshift = 15
@@ -36,13 +42,14 @@ def add_histogram_colorbar(ax, data, width=None, height=None, colormap=None, lab
               baseline=baseline, fill=False, color=outline_color, linewidth=1)
     x_points = np.asarray(xdim - leftshift - width + bins / 100 * width)
 
-    for i in np.arange(0, 20, 2):
+    for i in np.arange(0, bar_height, 2):
         ax.scatter(x_points, np.ones_like(x_points) * baseline + 2 + i,
                    c=((x_points - np.min(x_points)) / (np.max(x_points) - np.min(x_points))),
                    s=2, marker="s", cmap=colormap)
 
-    ax.add_artist(Rectangle((xdim - leftshift - width - 2, baseline), width + 4, 22, fill=False, edgecolor="black"))
+    ax.add_artist(Rectangle((xdim - leftshift - width - 2, baseline), width + 4,
+                            bar_height + 2, fill=False, edgecolor="black"))
 
-    ax.text(xdim - leftshift - width, baseline + 17, "min", color="white", fontsize=8, ha="left")
-    ax.text(xdim - leftshift - width / 2, baseline + 17, label, color="white", fontsize=8, ha="center")
-    ax.text(xdim - leftshift, baseline + 17, "max", color="white", fontsize=8, ha="right")
+    ax.text(xdim - leftshift - width, baseline + bar_height - 2, min_label, color="white", fontsize=8, ha="left")
+    ax.text(xdim - leftshift - width / 2, baseline + bar_height - 2, label, color="white", fontsize=8, ha="center")
+    ax.text(xdim - leftshift, baseline + bar_height - 2, max_label, color="white", fontsize=8, ha="right")

@@ -40,7 +40,6 @@ for a_idx, algo in enumerate(ALGORITHMS):
     images = intercept + slope * all_data
 
     sample_image = images[EXAMPLE_IMAGE_IDX].copy()
-    sample_error_window = apply_window_function(gt_img, sample_image, 15, StructuralSimilarityIndex)
     axes[a_idx + 1].imshow(sample_image.T, vmin=np.nanmin(gt_img), vmax=np.nanmax(gt_img))
     axes[a_idx + 1].axis("off")
     axes[a_idx + 1].text(40, 20, NAMES[a_idx], fontweight="bold", color="white")
