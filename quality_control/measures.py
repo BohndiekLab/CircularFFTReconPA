@@ -2,12 +2,15 @@ import torch
 import numpy as np
 from sewar import rmse
 from sklearn.metrics import mutual_info_score
-from torchmetrics.image import StructuralSimilarityIndexMeasure, UniversalImageQualityIndex
+from torchmetrics.image import StructuralSimilarityIndexMeasure, \
+    UniversalImageQualityIndex
 from scipy.signal import correlate
 from scipy.stats import entropy
 from scipy.spatial.distance import jensenshannon
 from scipy.stats import wasserstein_distance
 from scipy.spatial.distance import cosine
+from scipy.ndimage import sobel
+import pywt
 
 
 def validate_input(a, b):
@@ -171,19 +174,124 @@ def KullbackLeiblerDivergence(a, b):
 
 
 def JensenShannonDivergence(a, b):
+
     validate_input(a, b)
-    # Normalise the data
-    a = (a - np.mean(a)) / np.std(a)
-    b = (b - np.mean(b)) / np.std(b)
+    # Normalise the data, while expecting nan values to be present when a mask is set
+    a = (a - np.nanmean(a)) / np.nanstd(a)
+    b = (b - np.nanmean(b)) / np.nanstd(b)
 
     # Compute discrete JSD from marginal histograms
     jsd = 0
     for wl_idx in range(len(a)):
-        marginal_p, _ = np.histogram(a[wl_idx], bins=np.arange(-3, 3, 6 / 100))
-        marginal_q, _ = np.histogram(b[wl_idx], bins=np.arange(-3, 3, 6 / 100))
+
+        # Dropping nan values in cases where a mask is set
+        a_wl = a[wl_idx][~np.isnan(a[wl_idx])]
+        b_wl = b[wl_idx][~np.isnan(b[wl_idx])]
+
+        marginal_p, _ = np.histogram(a_wl, bins=np.arange(-3, 3, 6 / 100))
+        marginal_q, _ = np.histogram(b_wl, bins=np.arange(-3, 3, 6 / 100))
         marginal_p = marginal_p + 0.00001
         marginal_q = marginal_q + 0.00001
         jsd += jensenshannon(marginal_p, marginal_q, base=2)
 
     jsd = jsd / len(a)
     return jsd
+
+
+def Sharpness(a: np.ndarray):
+    """
+    This function computes the variation of the magnitude gradient along
+    all image dimensions.
+
+    if a is 3D, it is assumed to be a collection of 2D images, and the
+    average VOG over all 2D slices in the array will be computed.
+    In this case, the array is assumed to be formatted:
+        (n_images, x_dim, y_dim)
+
+    :param a: np.ndarray
+    :return:
+    """
+
+    def sharpness(_a):
+        grad_x = sobel(_a, axis=0, mode="constant")
+        grad_y = sobel(_a, axis=1, mode="constant")
+        magnitude_grad = np.sqrt(grad_x ** 2 + grad_y ** 2)
+        return np.linalg.norm(magnitude_grad) / np.linalg.norm(_a)
+
+    if len(np.shape(a)) == 3:
+        values = np.zeros((len(a)))
+        for idx in range(len(a)):
+            values[idx] = sharpness(a)
+        return np.mean(values)
+
+    return sharpness(a)
+
+
+def SharpnessGradientSparsity(a: np.ndarray):
+    """
+    This function computes the variation of the magnitude gradient along
+    all image dimensions.
+
+    if a is 3D, it is assumed to be a collection of 2D images, and the
+    average VOG over all 2D slices in the array will be computed.
+    In this case, the array is assumed to be formatted:
+        (n_images, x_dim, y_dim)
+
+    :param a: np.ndarray
+    :return:
+    """
+
+    def sharpness(_a):
+        grad_x = sobel(_a, axis=0, mode="constant")
+        grad_y = sobel(_a, axis=1, mode="constant")
+        magnitude_grad = np.sqrt(grad_x ** 2 + grad_y ** 2)
+
+        return np.count_nonzero(magnitude_grad > EPSILON) / magnitude_grad.size
+
+    if len(np.shape(a)) == 3:
+        values = np.zeros((len(a)))
+        for idx in range(len(a)):
+            values[idx] = sharpness(a)
+        return np.mean(values)
+
+    return sharpness(a)
+
+
+def SharpnessHaarWaveletSparsity(a: np.ndarray):
+    """
+    This function computes the variation of the magnitude gradient along
+    all image dimensions.
+
+    if a is 3D, it is assumed to be a collection of 2D images, and the
+    average VOG over all 2D slices in the array will be computed.
+    In this case, the array is assumed to be formatted:
+        (n_images, x_dim, y_dim)
+
+    :param a: np.ndarray
+    :return:
+    """
+
+    def sharpness(_a):
+
+        coeffs = pywt.dwt2(_a, 'haar')
+        cA, (cH, cV, cD) = coeffs
+
+        first_order_details = np.concatenate([cH, cV, cD], axis=None)
+
+        return np.count_nonzero(first_order_details > EPSILON) / first_order_details.size
+
+    if len(np.shape(a)) == 3:
+        values = np.zeros((len(a)))
+        for idx in range(len(a)):
+            values[idx] = sharpness(a)
+        return np.mean(values)
+
+    return sharpness(a)
+
+
+def MedianAbsoluteError(a, b):
+    return np.nanmedian(np.abs(a - b))
+
+
+def MeanAbsoluteError(a, b):
+    return np.nanmean(np.abs(a - b))

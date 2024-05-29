@@ -18,9 +18,9 @@ NAMES = ["Backprojection",
 data_source = "exp"
 EXAMPLE_IMAGE_IDX = 42
 
-fig, axes = plt.subplots(2, 3, figsize=(8, 5.333), layout="constrained")
+fig, axes = plt.subplots(3, 2, figsize=(5.33, 8), layout="constrained")
 
-axes = [axes[0, 0], axes[0, 1], axes[0, 2], axes[1, 0], axes[1, 1], axes[1, 2]]
+axes = [axes[0, 0], axes[1, 0], axes[2, 0], axes[0, 1], axes[1, 1], axes[2, 1]]
 
 gt = load_all("calibration", "p0")
 print(np.min(gt), np.max(gt))
@@ -47,9 +47,18 @@ for a_idx, algo in enumerate(ALGORITHMS):
     add_histogram_colorbar(axes[a_idx + 1], sample_image.T, vmin=np.min(gt_img),
                            vmax=np.max(gt_img), label="p$_0$")
 
-for n, ax in enumerate(axes):
-    ax.text(0.03, 0.87, string.ascii_uppercase[n], transform=ax.transAxes,
-            size=24, weight='bold', color="white")
+axes[0].text(0.03, 0.87, string.ascii_uppercase[0], transform=axes[0].transAxes,
+        size=24, weight='bold', color="white")
+axes[1].text(0.03, 0.87, string.ascii_uppercase[2], transform=axes[1].transAxes,
+        size=24, weight='bold', color="white")
+axes[2].text(0.03, 0.87, string.ascii_uppercase[4], transform=axes[2].transAxes,
+        size=24, weight='bold', color="white")
+axes[3].text(0.03, 0.87, string.ascii_uppercase[1], transform=axes[3].transAxes,
+        size=24, weight='bold', color="white")
+axes[4].text(0.03, 0.87, string.ascii_uppercase[3], transform=axes[4].transAxes,
+        size=24, weight='bold', color="white")
+axes[5].text(0.03, 0.87, string.ascii_uppercase[5], transform=axes[5].transAxes,
+        size=24, weight='bold', color="white")
 
-plt.savefig(f"recon_examples_{data_source}.png", dpi=300)
+plt.savefig(f"recon_examples_{data_source}.pdf", dpi=300)
 plt.show()

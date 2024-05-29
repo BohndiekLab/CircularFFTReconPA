@@ -1,7 +1,7 @@
 from utils.load_data import load_all, load_all_recons
 from scipy.stats import linregress
 import numpy as np
-from utils.segmentation import get_coupling_medium_segmentation
+from utils.segmentation import get_coupling_medium_segmentation, get_unit_circle
 import os
 import inspect
 import matplotlib.pyplot as plt

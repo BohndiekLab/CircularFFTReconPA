@@ -15,3 +15,15 @@ def get_coupling_medium_segmentation(p0):
     segmentation_mask[mask] = p0[mask] > threshold
 
     return segmentation_mask
+
+
+def get_unit_circle(p0):
+    segmentation_mask = np.zeros_like(p0).astype(bool)
+
+    center = (150, 150)
+    radius = 150
+    y, x = np.ogrid[:300, :300]
+    mask = ((x - center[0]) ** 2 + (y - center[1]) ** 2 > radius ** 2)
+    segmentation_mask[~mask] = 1
+
+    return segmentation_mask

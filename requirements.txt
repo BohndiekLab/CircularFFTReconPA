@@ -3,3 +3,4 @@ matplotlib
 scipy
 patato
 pacfish
+pywavelets
