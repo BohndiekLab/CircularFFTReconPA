@@ -1,9 +1,10 @@
-from utils.load_data import load_all, load_all_recons
 from scipy.stats import linregress
 import numpy as np
 from utils.segmentation import get_coupling_medium_segmentation, get_unit_circle
+from utils.constants import get_recon_path, get_p0_path
 import os
 import inspect
+import glob
 import matplotlib.pyplot as plt
 
 
@@ -15,8 +16,19 @@ def calibrate_to_p0(algorithm, data_source):
         cal_data = np.load(cal_file)
         return cal_data["slope"], cal_data["intercept"], cal_data["r"]
 
-    p0 = load_all("calibration", "p0")
-    target = load_all_recons("calibration", data_source, algorithm)
+    p0_path = get_p0_path("calibration")
+    p0_files = glob.glob(f"{p0_path}/*.npy")
+    gt = []
+    for p0_file in p0_files:
+        gt.append(np.load(p0_file))
+    p0 = np.asarray(gt)
+
+    recon_path = get_recon_path("calibration", data_source, algorithm)
+    recon_files = glob.glob(f"{recon_path}/*.npy")
+    all_data = []
+    for recon_file in recon_files:
+        all_data.append(np.load(recon_file))
+    target = np.asarray(all_data)
 
     for idx in range(len(p0)):
         segmentation_mask = get_coupling_medium_segmentation(p0[idx])
@@ -38,6 +50,8 @@ def calibrate_to_p0(algorithm, data_source):
              slope=slope,
              intercept=intercept,
              r=r,
-             p=p)
+             p=p,
+             target=target,
+             p0=p0)
 
     return slope, intercept, r

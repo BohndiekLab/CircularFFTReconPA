@@ -1,5 +1,5 @@
 from calibrate.calibrate import calibrate_to_p0
-from utils.load_data import load_all_recons, load_all
+from utils.constants import get_p0_path, get_recon_path
 import numpy as np
 import matplotlib.pyplot as plt
 from quality_control.measures import StructuralSimilarityIndex, JensenShannonDivergence
@@ -7,22 +7,30 @@ from quality_control.create_metric_window import apply_window_function
 from matplotlib_scalebar.scalebar import ScaleBar
 from utils.histogram_colourbar import add_histogram_colorbar
 import string
+import glob
 
 SPACING = 0.10666666667
 
-ALGORITHMS = ["BP", "MB", "TR", "ITTR", "FFT"]
-NAMES = ["Backprojection",
+ALGORITHMS = ["BP", "BPH", "MB", "TR", "ITTR", "FFT"]
+NAMES = ["Delay And Sum",
+         "Filtered Backprojection",
          "Model-based",
-         "Time reversal", "Iterative time reversal",
+         "Time reversal",
+         "Iterative time reversal",
          "Circular FFT"]
-data_source = "exp"
-EXAMPLE_IMAGE_IDX = 42
+data_source = "sim_raw"
+EXAMPLE_IMAGE_IDX = 50
 
-fig, axes = plt.subplots(3, 2, figsize=(5.33, 8), layout="constrained")
+fig, axes = plt.subplots(3, 3, figsize=(8, 8), layout="constrained")
 
-axes = [axes[0, 0], axes[1, 0], axes[2, 0], axes[0, 1], axes[1, 1], axes[2, 1]]
+axes = [axes[0, 0], axes[0, 1], axes[0, 2], axes[1, 0], axes[1, 1], axes[1, 2], axes[2, 0], axes[2, 1]]
 
-gt = load_all("calibration", "p0")
+p0_path = get_p0_path("calibration")
+p0_files = glob.glob(f"{p0_path}/*.npy")
+gt = []
+for p0_file in p0_files:
+    gt.append(np.load(p0_file))
+gt = np.asarray(gt)
 print(np.min(gt), np.max(gt))
 gt_img = gt[EXAMPLE_IMAGE_IDX].copy()
 
@@ -35,7 +43,12 @@ add_histogram_colorbar(axes[0], gt_img.T, label="p$_0$")
 for a_idx, algo in enumerate(ALGORITHMS):
     print(algo)
     slope, intercept, r = calibrate_to_p0(algo, data_source)
-    all_data = load_all_recons("calibration", data_source, algo)
+    recon_path = get_recon_path("calibration", data_source, algo)
+    recon_files = glob.glob(f"{recon_path}/*.npy")
+    all_data = []
+    for recon_file in recon_files:
+        all_data.append(np.load(recon_file))
+    all_data = np.asarray(all_data)
     print(np.min(all_data), np.max(all_data))
     images = intercept + slope * all_data
 

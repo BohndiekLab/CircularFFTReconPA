@@ -5,7 +5,7 @@ from scipy.signal import hilbert2
 
 EXAMPLE_PHANTOM = "P.5.10.2_700.npy"
 
-p0_orig = np.load(f"{get_path('calibration', 'p0')}/{EXAMPLE_PHANTOM}")
+p0_orig = np.load(f"{get_raw_path('calibration', 'p0')}/{EXAMPLE_PHANTOM}")
 tr_orig = np.load(f"{get_recon_path('calibration', 'sim_raw', 'tr')}/{EXAMPLE_PHANTOM}")
 ittr_orig = np.load(f"{get_recon_path('calibration', 'sim_raw', 'ittr')}/{EXAMPLE_PHANTOM}")
 fft_orig = np.load(f"{get_recon_path('calibration', 'sim_raw', 'fft')}/{EXAMPLE_PHANTOM}")

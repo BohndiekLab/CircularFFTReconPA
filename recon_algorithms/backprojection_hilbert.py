@@ -26,7 +26,7 @@ def reconstruct(path, sound_speed=1488):
 
 times = []
 # reconstruct sim
-for file in glob.glob(get_path(data_source, "sim") + "/*.npy"):
+for file in glob.glob(get_raw_path(data_source, "sim") + "/*.npy"):
     print(file)
     save_file_path = file.replace("raw/sim", "recons/bph/sim")
     t = time.time()
@@ -39,7 +39,7 @@ print(np.mean(times[1:]), np.std(times[1:]))
 
 times = []
 # reconstruct sim_raw
-for file in glob.glob(get_path(data_source, "sim_raw") + "/*.npy"):
+for file in glob.glob(get_raw_path(data_source, "sim_raw") + "/*.npy"):
     print(file)
     save_file_path = file.replace("raw/sim_raw", "recons/bph/sim_raw")
     t = time.time()
@@ -52,7 +52,7 @@ print(np.mean(times[1:]), np.std(times[1:]))
 
 times = []
 # reconstruct exp
-for file in glob.glob(get_path(data_source, "exp") + "/*.npy"):
+for file in glob.glob(get_raw_path(data_source, "exp") + "/*.npy"):
     print(file)
     save_file_path = file.replace("raw/exp", "recons/bph/exp")
     t = time.time()
