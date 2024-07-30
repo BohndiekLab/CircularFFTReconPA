@@ -1,6 +1,7 @@
 import numpy as np
 from utils.constants import get_recon_path, get_mouse_recon_path
 import os, glob
+import matplotlib.pyplot as plt
 
 # Phantom Data
 print("Quality checking phantom reconstructions.")
@@ -25,6 +26,11 @@ for ds in dss:
 
             for file in files:
                 data = np.load(file)
+                plt.figure(figsize=(2, 2))
+                plt.imshow(data)
+                plt.axis("off")
+                plt.savefig(file.replace(".npy", ".png"))
+                plt.close()
                 if np.shape(data) != (300, 300):
                     print(f"\t\t{ds}, {dat}, {algorithm}: Found a file that was not the correct dimensions (300, 300). "
                           f"Instead was: {np.shape(data)}")

@@ -4,6 +4,7 @@ from patato.io.ipasc.read_ipasc import IPASCInterface
 from utils.constants import *
 import glob
 import time
+import matplotlib.pyplot as plt
 
 data_source = "testing"
 
@@ -18,6 +19,8 @@ def reconstruct(path, sound_speed=1488):
 
     ts = pa_data.get_time_series()
     time_series = np.load(path)
+    time_series[time_series > 1e4] = np.nanmedian(time_series)
+    time_series[time_series < -1e4] = np.nanmedian(time_series)
     ts.raw_data = np.reshape(time_series, (1, 1, 256, -1))
     new_t1, d1, _ = preproc.run(ts, pa_data)
     recon, _, _ = patato_recon.run(new_t1, pa_data, sound_speed, **d1)
