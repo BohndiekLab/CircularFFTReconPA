@@ -5,6 +5,7 @@ from utils.constants import *
 import glob
 import time
 
+data_source = "testing"
 
 def reconstruct(path, sound_speed=1490):
     pa_data = pat.PAData(IPASCInterface(PATH_IPASC_FILE))
@@ -25,37 +26,37 @@ def reconstruct(path, sound_speed=1490):
     return (np.asarray(np.squeeze(recon.raw_data))).copy()
 
 
-# times = []
-# # reconstruct sim
-# for file in glob.glob(get_path("calibration", "sim") + "/*.npy"):
-#     print(file)
-#     save_file_path = file.replace("sim", "recons/mb/sim")
-#     t = time.time()
-#     recon = reconstruct(file).T
-#     times.append(time.time() - t)
-#     np.save(save_file_path, recon)
-# times = np.asarray(times)
-# print(times)
-# print(np.mean(times[1:]), np.std(times[1:]))
-#
-# times = []
-# # reconstruct sim_raw
-# for file in glob.glob(get_path("calibration", "sim_raw") + "/*.npy"):
-#     print(file)
-#     save_file_path = file.replace("sim_raw", "recons/mb/sim_raw")
-#     t = time.time()
-#     recon = reconstruct(file).T
-#     times.append(time.time() - t)
-#     np.save(save_file_path, recon)
-# times = np.asarray(times)
-# print(times)
-# print(np.mean(times[1:]), np.std(times[1:]))
+times = []
+# reconstruct sim
+for file in glob.glob(get_path(data_source, "sim") + "/*.npy"):
+    print(file)
+    save_file_path = file.replace("raw/sim", "recons/mb/sim")
+    t = time.time()
+    recon = reconstruct(file).T
+    times.append(time.time() - t)
+    np.save(save_file_path, recon)
+times = np.asarray(times)
+print(times)
+print(np.mean(times[1:]), np.std(times[1:]))
+
+times = []
+# reconstruct sim_raw
+for file in glob.glob(get_path(data_source, "sim_raw") + "/*.npy"):
+    print(file)
+    save_file_path = file.replace("raw/sim_raw", "recons/mb/sim_raw")
+    t = time.time()
+    recon = reconstruct(file).T
+    times.append(time.time() - t)
+    np.save(save_file_path, recon)
+times = np.asarray(times)
+print(times)
+print(np.mean(times[1:]), np.std(times[1:]))
 
 times = []
 # reconstruct exp
-for file in glob.glob(get_path("calibration", "exp") + "/*.npy")[0:5]:
+for file in glob.glob(get_path(data_source, "exp") + "/*.npy"):
     print(file)
-    save_file_path = file.replace("exp", "recons/mb/exp")
+    save_file_path = file.replace("raw/exp", "recons/mb/exp")
     t = time.time()
     recon = reconstruct(file).T
     times.append(time.time() - t)

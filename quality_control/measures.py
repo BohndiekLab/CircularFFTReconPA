@@ -241,6 +241,8 @@ def SharpnessGradientSparsity(a: np.ndarray):
     :return:
     """
 
+    EPSILON = 1e-5
+
     def sharpness(_a):
         grad_x = sobel(_a, axis=0, mode="constant")
         grad_y = sobel(_a, axis=1, mode="constant")
@@ -270,6 +272,8 @@ def SharpnessHaarWaveletSparsity(a: np.ndarray):
     :param a: np.ndarray
     :return:
     """
+
+    EPSILON = 1e-5
 
     def sharpness(_a):
 

@@ -5,6 +5,7 @@ from utils.constants import *
 import glob
 import time
 
+data_source = "testing"
 
 def reconstruct(path, sound_speed=1488):
     pa_data = pat.PAData(IPASCInterface(PATH_IPASC_FILE))
@@ -25,9 +26,9 @@ def reconstruct(path, sound_speed=1488):
 
 times = []
 # reconstruct sim
-for file in glob.glob(get_path("calibration", "sim") + "/*.npy"):
+for file in glob.glob(get_path(data_source, "sim") + "/*.npy"):
     print(file)
-    save_file_path = file.replace("sim", "recons/bph/sim")
+    save_file_path = file.replace("raw/sim", "recons/bph/sim")
     t = time.time()
     recon = reconstruct(file).T
     times.append(time.time() - t)
@@ -38,9 +39,9 @@ print(np.mean(times[1:]), np.std(times[1:]))
 
 times = []
 # reconstruct sim_raw
-for file in glob.glob(get_path("calibration", "sim_raw") + "/*.npy"):
+for file in glob.glob(get_path(data_source, "sim_raw") + "/*.npy"):
     print(file)
-    save_file_path = file.replace("sim_raw", "recons/bph/sim_raw")
+    save_file_path = file.replace("raw/sim_raw", "recons/bph/sim_raw")
     t = time.time()
     recon = reconstruct(file).T
     times.append(time.time() - t)
@@ -51,9 +52,9 @@ print(np.mean(times[1:]), np.std(times[1:]))
 
 times = []
 # reconstruct exp
-for file in glob.glob(get_path("calibration", "exp") + "/*.npy"):
+for file in glob.glob(get_path(data_source, "exp") + "/*.npy"):
     print(file)
-    save_file_path = file.replace("exp", "recons/bph/exp")
+    save_file_path = file.replace("raw/exp", "recons/bph/exp")
     t = time.time()
     recon = reconstruct(file).T
     times.append(time.time() - t)

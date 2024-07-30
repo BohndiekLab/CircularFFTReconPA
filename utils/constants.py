@@ -7,7 +7,13 @@ def get_path(data_set=None, data=None):
     if data is None:
         data = "exp"
 
-    return f"{PATH_BASE}/data/{data_set}/{data}/"
+    return f"{PATH_BASE}/data/{data_set}/raw/{data}/"
+
+
+def get_mouse_recon_path(algorithm=None):
+    if algorithm is None:
+        algorithm = "bp"
+    return f"{PATH_BASE}/data/mice/recons/{algorithm}/"
 
 
 def get_recon_path(data_set=None, data=None, algorithm=None):

@@ -8,14 +8,14 @@ from quality_control.measures import StructuralSimilarityIndex, MedianAbsoluteEr
 from quality_control.create_metric_window import apply_window_function
 from matplotlib.patches import Rectangle
 
-ALGORITHMS = ["BP", "MB", "TR", "ITTR", "FFT"]
-NAMES = ["Backprojection",
+ALGORITHMS = ["BP", "BPH", "MB", "TR", "ITTR", "FFT"]
+NAMES = ["Backprojection", "BP + Hilbert",
          "Model-based reconstruction",
          "Time reversal", "Iterative time reversal",
          "Circular FFT"]
-data_source = "exp"
+data_source = "sim"
 
-gt = load_all("calibration", "p0")
+gt = load_all("testing", "p0")
 water_segmentations = np.zeros_like(gt)
 for idx in range(len(gt)):
     water_segmentations[idx] = get_coupling_medium_segmentation(gt[idx])
@@ -27,19 +27,13 @@ for a_idx, algo in enumerate(ALGORITHMS):
     res[algo] = dict()
     print(algo)
     slope, intercept, r = calibrate_to_p0(algo, data_source)
-    all_data = load_all_recons("calibration", data_source, algo)
+    all_data = load_all_recons("testing", data_source, algo)
     images = intercept + slope * all_data
 
     print("\tR")
     res[algo]["R"] = r
     print("\tMAE")
     gt[~water_segmentations] = np.nan
-    # plt.imshow(gt[0])
-    # plt.show()
-    # plt.close()
-    # plt.imshow(gt[23])
-    # plt.show()
-    # plt.close()
     images[~water_segmentations] = np.nan
     res[algo]["MAE"] = MedianAbsoluteError(images, gt)
     print("\tSSIM")
