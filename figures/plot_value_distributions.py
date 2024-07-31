@@ -9,10 +9,8 @@ algorithms = {
     "BP": "Delay And Sum",
     "BPH": "Filtered Backprojection",
     "MB": "Model-based",
-    "TR": "Time Reversal",
-    "ITTR": "Iterative Time Reversal",
-    "TR_interp": "TR (interp.)",
-    "ITTR_interp": "ITTR (interp.)",
+    "TR_interp": "Time Reversal",
+    "ITTR_interp": "Iterative Time Reversal",
     "FFT": "Circular FFT",
 }
 
@@ -30,8 +28,8 @@ def populate_subplot(data, normalise, subfig):
         values = np.asarray(values).reshape((-1, ))
         values = np.random.choice(values.reshape(-1,), 100000)
         if normalise:
-            intercept = np.load(f"../calibrate/cal_{key}_{data}.npz")["intercept"]
-            slope = np.load(f"../calibrate/cal_{key}_{data}.npz")["slope"]
+            intercept = np.load(f"../calibrate/cal_{key.replace('_interp', '')}_{data}.npz")["intercept"]
+            slope = np.load(f"../calibrate/cal_{key.replace('_interp', '')}_{data}.npz")["slope"]
             values = intercept + slope * values
         label = algorithms[key].replace(" ", "\n")
         axes[idx].violinplot(values, positions=[0], showextrema=False, points=50, widths=0.8)

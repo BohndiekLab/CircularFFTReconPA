@@ -12,7 +12,7 @@ NAMES = ["Delay And Sum", "Filtered Backprojection",
          "Model-based reconstruction",
          "Time reversal", "Iterative time reversal",
          "Circular FFT"]
-data_source = "sim_raw"
+data_source = "exp"
 
 files = glob.glob(get_p0_path(data_set="testing") + "/*.npy")
 p0 = []

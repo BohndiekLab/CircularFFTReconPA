@@ -9,7 +9,7 @@ from scipy.stats import entropy
 from scipy.spatial.distance import jensenshannon
 from scipy.stats import wasserstein_distance
 from scipy.spatial.distance import cosine
-from scipy.ndimage import sobel
+from scipy.ndimage import sobel, gaussian_filter
 import pywt
 from measures.haarPsi import haar_psi
 
@@ -47,7 +47,7 @@ def HaarPSI(a, b):
     if len(np.shape(b)) == 3:
         res = 0
         for i in range(len(b)):
-            res += haar_psi(a, b)[0]
+            res += haar_psi(a[i], b[i])[0]
 
         return res / len(b)
 
@@ -237,7 +237,7 @@ def Sharpness(a: np.ndarray):
     if len(np.shape(a)) == 3:
         values = np.zeros((len(a)))
         for idx in range(len(a)):
-            values[idx] = sharpness(a)
+            values[idx] = sharpness(a[idx])
         return np.mean(values)
 
     return sharpness(a)
@@ -269,7 +269,7 @@ def SharpnessGradientSparsity(a: np.ndarray):
     if len(np.shape(a)) == 3:
         values = np.zeros((len(a)))
         for idx in range(len(a)):
-            values[idx] = sharpness(a)
+            values[idx] = sharpness(a[idx])
         return np.mean(values)
 
     return sharpness(a)
@@ -292,18 +292,29 @@ def SharpnessHaarWaveletSparsity(a: np.ndarray):
     EPSILON = 1e-5
 
     def sharpness(_a):
-
+        _a = gaussian_filter(_a, 1)
+        # Perform 2D Haar wavelet transform
         coeffs = pywt.dwt2(_a, 'haar')
         cA, (cH, cV, cD) = coeffs
 
+        # Concatenate detail coefficients
         first_order_details = np.concatenate([cH, cV, cD], axis=None)
 
-        return np.count_nonzero(first_order_details > EPSILON) / first_order_details.size
+        # Count nonzero elements above the threshold
+        nonzero_count = np.count_nonzero(first_order_details > EPSILON)
+        total_count = first_order_details.size
 
-    if len(np.shape(a)) == 3:
-        values = np.zeros((len(a)))
+        # Debugging statements to inspect values
+        # print("First Order Details:", first_order_details)
+        # print("Nonzero Count:", nonzero_count)
+        # print("Total Count:", total_count)
+
+        return ((nonzero_count / total_count) - 0.2) * 100
+
+    if len(a.shape) == 3:
+        values = np.zeros(len(a))
         for idx in range(len(a)):
-            values[idx] = sharpness(a)
+            values[idx] = sharpness(a[idx])
         return np.mean(values)
 
     return sharpness(a)
