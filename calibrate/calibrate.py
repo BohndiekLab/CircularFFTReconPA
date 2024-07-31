@@ -23,7 +23,7 @@ def calibrate_to_p0(algorithm, data_source):
         gt.append(np.load(p0_file))
     p0 = np.asarray(gt)
 
-    recon_path = get_recon_path("calibration", data_source, algorithm)
+    recon_path = get_recon_path("calibration", data_source, algorithm.replace("_interp", ""))
     recon_files = glob.glob(f"{recon_path}/*.npy")
     all_data = []
     for recon_file in recon_files:
