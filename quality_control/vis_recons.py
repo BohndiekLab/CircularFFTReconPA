@@ -1,7 +1,6 @@
 import numpy as np
 from utils.constants import *
 import matplotlib.pyplot as plt
-from scipy.signal import hilbert2
 
 EXAMPLE_PHANTOM = "P.5.10.2_700.npy"
 

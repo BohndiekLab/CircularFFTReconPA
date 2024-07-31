@@ -2,8 +2,6 @@ from calibrate.calibrate import calibrate_to_p0
 from utils.constants import get_p0_path, get_recon_path
 import numpy as np
 import matplotlib.pyplot as plt
-from quality_control.measures import StructuralSimilarityIndex, JensenShannonDivergence
-from quality_control.create_metric_window import apply_window_function
 from matplotlib_scalebar.scalebar import ScaleBar
 from utils.histogram_colourbar import add_histogram_colorbar
 import string

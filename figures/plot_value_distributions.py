@@ -8,10 +8,12 @@ import glob
 algorithms = {
     "BP": "Delay And Sum",
     "BPH": "Filtered Backprojection",
-    "FFT": "Circular FFT",
+    "MB": "Model-based",
     "TR": "Time Reversal",
     "ITTR": "Iterative Time Reversal",
-    "MB": "Model-based",
+    "TR_interp": "TR (interp.)",
+    "ITTR_interp": "ITTR (interp.)",
+    "FFT": "Circular FFT",
 }
 
 fig = plt.figure(figsize=(12, 5), layout="constrained")

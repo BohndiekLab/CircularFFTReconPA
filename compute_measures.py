@@ -1,33 +1,43 @@
 from calibrate.calibrate import calibrate_to_p0
-from utils.load_data import load_all_recons, load_all
 import numpy as np
-import matplotlib.pyplot as plt
-from utils.segmentation import get_coupling_medium_segmentation, get_unit_circle
-from quality_control.measures import StructuralSimilarityIndex, MedianAbsoluteError, \
-    JensenShannonDivergence, Sharpness, SharpnessHaarWaveletSparsity, SharpnessGradientSparsity
-from quality_control.create_metric_window import apply_window_function
-from matplotlib.patches import Rectangle
+from utils.constants import get_p0_path, get_recon_path
+from utils.segmentation import get_coupling_medium_segmentation
+from measures.measures import StructuralSimilarityIndex, MedianAbsoluteError, \
+    JensenShannonDivergence, SharpnessHaarWaveletSparsity, HaarPSI
+import glob
+import json
 
-ALGORITHMS = ["BP", "BPH", "MB", "TR", "ITTR", "FFT"]
-NAMES = ["Backprojection", "BP + Hilbert",
+ALGORITHMS = ["BP", "BPH", "MB", "TR_interp", "ITTR_interp", "FFT"]
+NAMES = ["Delay And Sum", "Filtered Backprojection",
          "Model-based reconstruction",
          "Time reversal", "Iterative time reversal",
          "Circular FFT"]
-data_source = "sim"
+data_source = "sim_raw"
 
-gt = load_all("testing", "p0")
+files = glob.glob(get_p0_path(data_set="testing") + "/*.npy")
+p0 = []
+for file in files:
+    p0.append(np.load(file))
+gt = np.asarray(p0)
 water_segmentations = np.zeros_like(gt)
 for idx in range(len(gt)):
     water_segmentations[idx] = get_coupling_medium_segmentation(gt[idx])
 water_segmentations = water_segmentations.astype(bool)
-res = dict()
 
+with open("measures/sharpness.json", "r+") as jsonfile:
+    fwhm = json.load(jsonfile)
+
+res = dict()
 
 for a_idx, algo in enumerate(ALGORITHMS):
     res[algo] = dict()
     print(algo)
-    slope, intercept, r = calibrate_to_p0(algo, data_source)
-    all_data = load_all_recons("testing", data_source, algo)
+    slope, intercept, r = calibrate_to_p0(algo.replace("_interp", ""), data_source)
+    files = glob.glob(get_recon_path(data_set="testing", data=data_source, algorithm=algo) + "/*.npy")
+    values = []
+    for file in files:
+        values.append(np.load(file))
+    all_data = np.asarray(values)
     images = intercept + slope * all_data
 
     print("\tR")
@@ -44,25 +54,30 @@ for a_idx, algo in enumerate(ALGORITHMS):
     gt[~water_segmentations] = np.nan
     images[~water_segmentations] = np.nan
     res[algo]["JSD"] = JensenShannonDivergence(images.reshape((len(images), -1)), gt.reshape((len(images), -1)))
-    print("\tSHRP")
+    print("\tHaarPSI")
     gt[~water_segmentations] = 0
     images[~water_segmentations] = 0
-    res[algo]["SHRP"] = SharpnessHaarWaveletSparsity(images)
+    res[algo]["HaarPSI"] = HaarPSI(images, gt)
+    print("\tSPARSE")
+    gt[~water_segmentations] = 0
+    images[~water_segmentations] = 0
+    res[algo]["SPARSE"] = SharpnessHaarWaveletSparsity(images)
+
+    print("\tFWHM")
+    res[algo]["FWHM"] = np.mean(fwhm[data_source][algo])
+
 
 SHRP_SCALE = 1
 
-print(
-f"\\begin{{table}}[!ht]\n"
-    f"\t\\centering\n"
-    f"\t\\begin{{tabular}}{{llllll}}\n"
-        f"\t\t & \\textbf{{{ALGORITHMS[0]}}} & \\textbf{{{ALGORITHMS[1]}}} & \\textbf{{{ALGORITHMS[2]}}} & \\textbf{{{ALGORITHMS[3]}}} & \\textbf{{{ALGORITHMS[4]}}} \\\\ \\hline\n"
-        f"\t\t\\\\\n"
-        f"\t\t\\textbf{{R}} & {res[ALGORITHMS[0]]['R']:.2f} & {res[ALGORITHMS[1]]['R']:.2f} & {res[ALGORITHMS[2]]['R']:.2f} & {res[ALGORITHMS[3]]['R']:.2f} & {res[ALGORITHMS[4]]['R']:.2f} \\\\ \n"
-        f"\t\t\\textbf{{MAE}} & {res[ALGORITHMS[0]]['MAE']:.0f} & {res[ALGORITHMS[1]]['MAE']:.0f} & {res[ALGORITHMS[2]]['MAE']:.0f} & {res[ALGORITHMS[3]]['MAE']:.0f} & {res[ALGORITHMS[4]]['MAE']:.0f} \\\\ \n"
-        f"\t\t\\textbf{{SSIM}} & {res[ALGORITHMS[0]]['SSIM']:.2f} & {res[ALGORITHMS[1]]['SSIM']:.2f} & {res[ALGORITHMS[2]]['SSIM']:.2f} & {res[ALGORITHMS[3]]['SSIM']:.2f} & {res[ALGORITHMS[4]]['SSIM']:.2f} \\\\ \n"
-        f"\t\t\\textbf{{JSD}} & {res[ALGORITHMS[0]]['JSD']:.2f} & {res[ALGORITHMS[1]]['JSD']:.2f} & {res[ALGORITHMS[2]]['JSD']:.2f} & {res[ALGORITHMS[3]]['JSD']:.2f} & {res[ALGORITHMS[4]]['JSD']:.2f} \\\\ \n"
-        f"\t\t\\textbf{{SHRP}} & {res[ALGORITHMS[0]]['SHRP']/SHRP_SCALE:.2f} & {res[ALGORITHMS[1]]['SHRP']/SHRP_SCALE:.2f} & {res[ALGORITHMS[2]]['SHRP']/SHRP_SCALE:.2f} & {res[ALGORITHMS[3]]['SHRP']/SHRP_SCALE:.2f} & {res[ALGORITHMS[4]]['SHRP']/SHRP_SCALE:.2f} \\\\ \n"
-    f"\t\\end{{tabular}}\n"
-    f"\\caption{{Results on {data_source}.}}"
-f"\\end{{table}}\n"
-)
+table_string = f"\\begin{{table}}[!ht]\n\t\\centering\n\t\\begin{{tabular}}{{lllllll}}\n\t\t"
+for i in range(len(ALGORITHMS)):
+    table_string += f" & \\textbf{{{ALGORITHMS[i]}}}"
+table_string += "\\\\ \\hline\n\t\t\\\\\n"
+for measure in ["R", "MAE", "SSIM", "JSD", "HaarPSI", "SPARSE", "FWHM"]:
+    table_string +=f"\t\t\\textbf{{{measure}}}"
+    for i in range(len(ALGORITHMS)):
+        table_string += f" & {res[ALGORITHMS[i]][measure]:.2f}"
+    table_string += "\\\\ \n"
+table_string += f"\t\\end{{tabular}}\n\\caption{{Results on {data_source}.}}\\end{{table}}\n"
+
+print(table_string)

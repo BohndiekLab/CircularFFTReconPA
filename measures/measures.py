@@ -11,6 +11,7 @@ from scipy.stats import wasserstein_distance
 from scipy.spatial.distance import cosine
 from scipy.ndimage import sobel
 import pywt
+from measures.haarPsi import haar_psi
 
 
 def validate_input(a, b):
@@ -36,6 +37,21 @@ def get_torch_tensor(np_array):
         raise AssertionError("The input image must be 2D or 3D")
 
     return torch.from_numpy(np_array.reshape((1, sz, sx, sy)))
+
+
+def HaarPSI(a, b):
+    a = a.copy()
+    b = b.copy()
+    a = (a - np.min(a)) / (np.max(a) - np.min(a)) * 255
+    b = (b - np.min(b)) / (np.max(b) - np.min(b)) * 255
+    if len(np.shape(b)) == 3:
+        res = 0
+        for i in range(len(b)):
+            res += haar_psi(a, b)[0]
+
+        return res / len(b)
+
+    return haar_psi(a, b)[0]
 
 
 def StructuralSimilarityIndex(expected_result, reconstructed_image):

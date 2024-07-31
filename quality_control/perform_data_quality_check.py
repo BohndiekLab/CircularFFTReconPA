@@ -21,16 +21,16 @@ for ds in dss:
                 if len(files) != 75:
                     print(f"\t{ds}, {dat}, {algorithm} had {len(files)} files instead of 75")
             if ds == "testing":
-                if len(files) != 83:
-                    print(f"\t{ds}, {dat}, {algorithm} had {len(files)} files instead of 83")
+                if len(files) != 79:
+                    print(f"\t{ds}, {dat}, {algorithm} had {len(files)} files instead of 79")
 
             for file in files:
                 data = np.load(file)
-                plt.figure(figsize=(2, 2))
-                plt.imshow(data)
-                plt.axis("off")
-                plt.savefig(file.replace(".npy", ".png"))
-                plt.close()
+                # plt.figure(figsize=(2, 2))
+                # plt.imshow(data)
+                # plt.axis("off")
+                # plt.savefig(file.replace(".npy", ".png"))
+                # plt.close()
                 if np.shape(data) != (300, 300):
                     print(f"\t\t{ds}, {dat}, {algorithm}: Found a file that was not the correct dimensions (300, 300). "
                           f"Instead was: {np.shape(data)}")
@@ -51,7 +51,11 @@ for algorithm in algorithms:
 
     for file in files:
         data = np.load(file)
-
+        plt.figure(figsize=(2, 2))
+        plt.imshow(data[0])
+        plt.axis("off")
+        plt.savefig(file.replace(".npy", ".png"))
+        plt.close()
         if np.shape(data) != (10, 300, 300):
             print(f"\t\t{algorithm}: Found a file that was not the correct dimensions (10, 300, 300). "
                   f"Instead was: {np.shape(data)}")
