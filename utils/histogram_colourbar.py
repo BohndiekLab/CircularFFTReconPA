@@ -3,7 +3,7 @@ from matplotlib.patches import Rectangle
 
 
 def add_histogram_colorbar(ax, data, width=None, height=None, colormap=None, label=None,
-                           vmin=None, vmax=None, min_label=None, max_label=None):
+                           vmin=None, vmax=None, min_label=None, max_label=None, fontsize=8):
 
     ydim, xdim = np.shape(data)
 
@@ -50,6 +50,6 @@ def add_histogram_colorbar(ax, data, width=None, height=None, colormap=None, lab
     ax.add_artist(Rectangle((xdim - leftshift - width - 2, baseline), width + 4,
                             bar_height + 2, fill=False, edgecolor="black"))
 
-    ax.text(xdim - leftshift - width, baseline + bar_height - 2, min_label, color="white", fontsize=8, ha="left")
-    ax.text(xdim - leftshift - width / 2, baseline + bar_height - 2, label, color="white", fontsize=8, ha="center")
-    ax.text(xdim - leftshift, baseline + bar_height - 2, max_label, color="white", fontsize=8, ha="right")
+    ax.text(xdim - leftshift - width, baseline + bar_height - 2, min_label, color="white", fontsize=fontsize, ha="left")
+    ax.text(xdim - leftshift - width / 2, baseline + bar_height - 2, label, color="white", fontsize=fontsize, ha="center")
+    ax.text(xdim - leftshift, baseline + bar_height - 2, max_label, color="white", fontsize=fontsize, ha="right")

@@ -4,7 +4,7 @@ from patato.unmixing.unmixer import SpectralUnmixer, SO2Calculator
 
 def linear_unmixing(spectra, wavelengths):
 
-    spectra = spectra.reshape((1, 10, 250, 1, 250))
+    spectra = spectra.reshape((1, len(wavelengths), 250, 1, 250))
 
     r = Reconstruction(spectra, wavelengths,
                        field_of_view=(1, 1, 1))  # field of view is the width of the image along x, y, z

@@ -38,7 +38,11 @@ for a_idx, algo in enumerate(ALGORITHMS):
     for file in files:
         values.append(np.load(file))
     all_data = np.asarray(values)
+    all_data[np.isnan(all_data)] = np.nanmedian(all_data)
+    all_data[np.isinf(all_data)] = np.nanmedian(all_data)
+    all_data[all_data > 1e5] = np.nanmedian(all_data)
     images = intercept + slope * all_data
+
 
     print("\tR")
     res[algo]["R"] = r

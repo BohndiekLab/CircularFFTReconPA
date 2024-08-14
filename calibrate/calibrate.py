@@ -28,6 +28,12 @@ def calibrate_to_p0(algorithm, data_source):
     all_data = []
     for recon_file in recon_files:
         all_data.append(np.load(recon_file))
+
+    all_data = np.asarray(all_data)
+    all_data[np.isnan(all_data)] = np.nanmedian(all_data)
+    all_data[np.isinf(all_data)] = np.nanmedian(all_data)
+    all_data[all_data > 1e5] = np.nanmedian(all_data)
+
     target = np.asarray(all_data)
 
     for idx in range(len(p0)):
@@ -37,10 +43,8 @@ def calibrate_to_p0(algorithm, data_source):
 
     p0 = np.reshape(p0, (-1, ))
     target = np.reshape(target, (-1,))
-    print(len(p0))
     p0 = p0[~np.isnan(p0)]
     target = target[~np.isnan(target)]
-    print(len(p0))
 
     slope, intercept, r, p, _ = linregress(target, p0)
 

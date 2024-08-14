@@ -32,6 +32,9 @@ def populate_subplot(data, normalise, subfig):
             slope = np.load(f"../calibrate/cal_{key.replace('_interp', '')}_{data}.npz")["slope"]
             values = intercept + slope * values
         label = algorithms[key].replace(" ", "\n")
+        values[values > 1e7] = np.nan
+        values = values[~np.isnan(values)]
+
         axes[idx].violinplot(values, positions=[0], showextrema=False, points=50, widths=0.8)
         axes[idx].boxplot(values, positions=[0], labels=[label], showfliers=False, widths=0.8)
         axes[idx].spines[["top", "right", "bottom"]].set_visible(False)
@@ -51,10 +54,7 @@ subfigs[0, 1].suptitle("$\\bf{B.}$ Simulated data after normalisation", ha="left
 subfigs[1, 0].suptitle("$\\bf{C.}$ Experimental data before normalisation", ha="left", x=0)
 subfigs[1, 1].suptitle("$\\bf{D.}$ Experimental data after normalisation", ha="left", x=0)
 
-plt.show()
-
-
-
+plt.savefig("value_distributions.pdf", dpi=300)
 
 plt.show()
 plt.close()

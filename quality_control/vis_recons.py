@@ -2,14 +2,14 @@ import numpy as np
 from utils.constants import *
 import matplotlib.pyplot as plt
 
-EXAMPLE_PHANTOM = "P.5.10.2_700.npy"
+EXAMPLE_PHANTOM = "P.5.11_700.npy"
 
-p0_orig = np.load(f"{get_raw_path('calibration', 'p0')}/{EXAMPLE_PHANTOM}")
-tr_orig = np.load(f"{get_recon_path('calibration', 'sim_raw', 'tr')}/{EXAMPLE_PHANTOM}")
-ittr_orig = np.load(f"{get_recon_path('calibration', 'sim_raw', 'ittr')}/{EXAMPLE_PHANTOM}")
-fft_orig = np.load(f"{get_recon_path('calibration', 'sim_raw', 'fft')}/{EXAMPLE_PHANTOM}")
-bp_orig = np.load(f"{get_recon_path('calibration', 'sim_raw', 'bp')}/{EXAMPLE_PHANTOM}")
-mb_orig = np.load(f"{get_recon_path('calibration', 'sim_raw', 'mb')}/{EXAMPLE_PHANTOM}")
+p0_orig = np.load(f"{get_p0_path('testing')}/{EXAMPLE_PHANTOM}")
+tr_orig = np.load(f"{get_recon_path('testing', 'sim_raw', 'tr')}/{EXAMPLE_PHANTOM}")
+ittr_orig = np.load(f"{get_recon_path('testing', 'sim_raw', 'ittr')}/{EXAMPLE_PHANTOM}")
+fft_orig = np.load(f"{get_recon_path('testing', 'sim_raw', 'fft')}/{EXAMPLE_PHANTOM}")
+bp_orig = np.load(f"{get_recon_path('testing', 'sim_raw', 'bp')}/{EXAMPLE_PHANTOM}")
+mb_orig = np.load(f"{get_recon_path('testing', 'sim_raw', 'mb')}/{EXAMPLE_PHANTOM}")
 
 p0 = p0_orig.copy()
 tr = tr_orig.copy()
@@ -20,24 +20,17 @@ mb = mb_orig.copy()
 
 fig, ((ax1, ax2, ax3), (ax4, ax5, ax6)) = plt.subplots(2, 3)
 
-segmentation_mask = np.zeros_like(p0).astype(bool)
-segmentation_mask[:75, :] = p0[:75, :] < 20
-segmentation_mask[225:, :] = p0[225:, :] < 20
-segmentation_mask[:, :75] = p0[:, :75] < 20
-segmentation_mask[:, 225:] = p0[:, 225:] < 20
-
-p0[segmentation_mask] = np.nan
-tr[segmentation_mask] = np.nan
-ittr[segmentation_mask] = np.nan
-fft[segmentation_mask] = np.nan
-bp[segmentation_mask] = np.nan
-mb[segmentation_mask] = np.nan
-
+ax1.set_title("p0")
 ax1.imshow(p0)
+ax2.set_title("TR")
 ax2.imshow(tr)
+ax3.set_title("ITTR")
 ax3.imshow(ittr)
+ax4.set_title("BP")
 ax4.imshow(bp)
+ax5.set_title("MB")
 ax5.imshow(mb)
+ax6.set_title("FFT")
 ax6.imshow(fft)
 
 

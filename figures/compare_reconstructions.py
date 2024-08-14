@@ -16,7 +16,7 @@ NAMES = ["Delay And Sum",
          "Time reversal",
          "Iterative time reversal",
          "Circular FFT"]
-data_source = "exp"
+data_source = "sim_raw"
 EXAMPLE_IMAGE_IDX = 24
 
 fig, axes = plt.subplots(3, 2, figsize=(5.5, 8), layout="constrained")

@@ -21,6 +21,10 @@ def get_mouse_recon_path(algorithm=None):
     return f"{PATH_BASE}/data/mice/recons/{algorithm}/"
 
 
+def get_full_view_path():
+    return f"{PATH_BASE}/data/full_view/fft/"
+
+
 def get_recon_path(data_set=None, data=None, algorithm=None):
     if data_set is None:
         data_set = "calibration"
