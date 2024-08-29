@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from utils.linear_unmixing import linear_unmixing
 from matplotlib_scalebar.scalebar import ScaleBar
 from utils.histogram_colourbar import add_histogram_colorbar
+import simpa as sp
 from calibrate.calibrate import calibrate_to_p0
 from scipy.ndimage import gaussian_filter
 from scipy.signal import hilbert2
@@ -12,9 +13,8 @@ import nrrd
 
 SPACING = 0.10666666667
 
-ALGORITHMS = ["BPH", "MB", "ITTR_interp", "FFT"]
-NAMES = ["Filtered Backproj.",
-         "Model-based",
+ALGORITHMS = ["MB", "ITTR_interp", "FFT"]
+NAMES = ["Model-based",
          "Iterative TR",
          "Circular FFT"]
 # There exist 8 scans in total (10 wavelengths each)
@@ -23,6 +23,9 @@ WAVELENGTH = np.asarray([700, 730, 750, 760, 770, 800, 820, 840, 850, 880])
 WL_CUTOFF = 7
 SO2_MIN = 50
 SO2_MAX = 80
+
+arterial_spectrum = np.asarray([sp.MOLECULE_LIBRARY.oxyhemoglobin(1.0).spectrum.get_value_for_wavelength(wl) for wl in WAVELENGTH])
+arterial_spectrum = arterial_spectrum / arterial_spectrum[5]
 
 MASK_LABELS = {
     1: "BACKGROUND",
@@ -35,11 +38,11 @@ MASK_LABELS = {
 COLOURS = ["black", "lightgray", "pink", "purple", "orange", "red"]
 
 
-fig, axes = plt.subplots(4, 3, figsize=(7.5, 10), layout="constrained")
+fig, axes = plt.subplots(3, 3, figsize=(8, 7.5), layout="constrained")
 
-axes = [axes[0, 0], axes[1, 0], axes[2, 0], axes[3, 0],
-        axes[0, 1], axes[1, 1], axes[2, 1], axes[3, 1],
-        axes[0, 2], axes[1, 2], axes[2, 2], axes[3, 2]]
+axes = [axes[0, 0], axes[1, 0], axes[2, 0],
+        axes[0, 1], axes[1, 1], axes[2, 1],
+        axes[0, 2], axes[1, 2], axes[2, 2]]
 
 selection = np.s_[25:275, 50:300]
 
@@ -73,58 +76,77 @@ for a_idx, algo in enumerate(ALGORITHMS):
     # data = (data - np.min(data, axis=0)[None, :, :]) / (np.max(data, axis=0)[None, :, :]- np.min(data, axis=0)[None, :, :])
 
     # strategy 6: ignore negative pixels
-    data[data <= 0] = np.nan
+    #data[data <= 0] = np.nan
 
     # strategy 7: use the calibration
     # slope, intercept, r = calibrate_to_p0(algo.replace("_interp", ""), "exp")
     # data = intercept + slope * data
 
     # Normalise the spectra, such that the value at 800nm is 1
+
+    data = data - np.mean(data)
+    l1 = np.linalg.norm(np.reshape(data, (-1)), ord=1)/np.size(data)
+    data = data + 4 * l1
+
+    data[data <= 0] = np.nan
+
     data = data / data[5][None, :, :]
     print(np.shape(data))
 
-    axes[a_idx].imshow(sample_image, cmap="magma", vmin=np.percentile(sample_image, 1), vmax=np.percentile(sample_image, 99))
+    axes[a_idx].imshow(sample_image, cmap="viridis", vmin=np.percentile(sample_image, 1), vmax=np.percentile(sample_image, 99))
     axes[a_idx].axis("off")
-    axes[a_idx].text(40, 20, NAMES[a_idx], fontweight="bold", color="white")
     axes[a_idx].add_artist(ScaleBar(SPACING, "mm", length_fraction=0.25, location="lower left", color="white", box_alpha=0))
-    add_histogram_colorbar(axes[a_idx], sample_image, label="p$_0$", colormap="magma",
+    add_histogram_colorbar(axes[a_idx], sample_image, label="p$_0$", colormap="viridis",
                            vmin=np.percentile(sample_image, 1), vmax=np.percentile(sample_image, 99))
 
     for idx in [2, 3, 4, 5, 6]:
         axes[a_idx].plot([], [], color=COLOURS[idx-1], label=MASK_LABELS[idx])
         axes[a_idx].contour(labels==idx, colors=COLOURS[idx-1])
 
+    # While showing the literature spectra for HBO2 would be cool to compare the reconstructed spectrum with,
+    # it does not bring much of a benefit, as the reconstructed spectrum looks to be quite off for all the
+    # reconstruction methods.
+
+    # axes[a_idx].plot([], [], color="black", linestyle="dotted", label="HbO$_2$ (lit.)")
+    # axes[a_idx + 3].plot(WAVELENGTH[:WL_CUTOFF], arterial_spectrum[:WL_CUTOFF], color="black", linestyle="dotted", label="HbO$_2$ (lit.)")
     for label in [3, 4, 5, 6]:
-        axes[a_idx + 4].plot(WAVELENGTH[:WL_CUTOFF], np.nanmedian(data[:WL_CUTOFF, labels == label], axis=1), color=COLOURS[label - 1],
+        axes[a_idx + 3].plot(WAVELENGTH[:WL_CUTOFF], np.nanmedian(data[:WL_CUTOFF, labels == label], axis=1), color=COLOURS[label - 1],
                              label=MASK_LABELS[label])
-        axes[a_idx + 4].spines[["right", "top"]].set_visible(False)
+        axes[a_idx + 3].spines[["right", "top"]].set_visible(False)
+
+    axes[a_idx + 3].set_ylim(0.78, 1.1)
 
     if a_idx == 0:
+        axes[a_idx].text(40, 20, "Reconstruction", fontweight="bold", color="white")
         axes[a_idx].legend(ncol=1, loc="center right", labelspacing=0, fontsize=8.5,
-                  borderpad=0.1, handlelength=0.8, handletextpad=0.4,
-                  labelcolor="white", framealpha=0)
-        axes[a_idx+4].legend(ncol=1, loc="lower center", labelspacing=0, fontsize=8.5,
                            borderpad=0.1, handlelength=0.8, handletextpad=0.4,
-                           labelcolor="black", framealpha=0)
-        axes[a_idx+4].text(720, 1.03, "Mean organ spectrum", fontweight="bold", color="black")
+                           labelcolor="white", framealpha=0)
+        axes[a_idx+3].legend(ncol=1, loc="lower right", labelspacing=0, fontsize=8.5,
+                             borderpad=0.1, handlelength=0.8, handletextpad=0.4,
+                             labelcolor="black", framealpha=0)
+        axes[a_idx+3].text(720, 1.075, r"Avg. PA signal over $\lambda$", fontweight="bold", color="black")
+        axes[a_idx + 6].text(40, 20, "Linearly unmixed sO$_2$", fontweight="bold", color="black")
     lu = np.squeeze(linear_unmixing(data[:WL_CUTOFF], WAVELENGTH[:WL_CUTOFF])) * 100
     lu[labels < 2] = np.nan
-    axes[a_idx+8].imshow(lu, vmin=SO2_MIN, vmax=SO2_MAX)
-    axes[a_idx+8].axis("off")
-    axes[a_idx+8].text(40, 20, NAMES[a_idx] + " (sO$_2$)", fontweight="bold", color="black")
-    axes[a_idx+8].add_artist(
+    axes[a_idx+6].imshow(lu, vmin=SO2_MIN, vmax=SO2_MAX, cmap="magma")
+    axes[a_idx+6].axis("off")
+    axes[a_idx+6].add_artist(
         ScaleBar(SPACING, "mm", length_fraction=0.25, location="lower left", color="black", box_alpha=0))
-    add_histogram_colorbar(axes[a_idx+8], lu, label="sO$_2$", vmin=SO2_MIN, vmax=SO2_MAX,
-                           min_label=str(SO2_MIN), max_label=str(SO2_MAX))
+    add_histogram_colorbar(axes[a_idx+6], lu, label="sO$_2$", vmin=SO2_MIN, vmax=SO2_MAX,
+                           min_label=str(SO2_MIN), max_label=str(SO2_MAX), colormap="magma")
 
     for idx in [2, 3, 4, 5, 6]:
-        axes[a_idx+8].plot([], [], color=COLOURS[idx-1], label=f"{np.nanmean(lu[labels==idx]):.0f}$\pm$"
+        axes[a_idx+6].plot([], [], color=COLOURS[idx-1], label=f"{np.nanmean(lu[labels==idx]):.0f}$\pm$"
                                                                f"{np.nanstd(lu[labels==idx]):.0f}%")
-        axes[a_idx+8].contour(labels == idx, colors=COLOURS[idx-1])
+        axes[a_idx+6].contour(labels == idx, colors=COLOURS[idx-1])
 
-    axes[a_idx+8].legend(ncol=1, loc="center right", labelspacing=0, fontsize=8,
-              borderpad=0.1, handlelength=0.8, handletextpad=0.4,
-              labelcolor="black", framealpha=0)
+    axes[a_idx+6].legend(ncol=1, loc="center right", labelspacing=0, fontsize=8,
+                         borderpad=0.1, handlelength=0.8, handletextpad=0.4,
+                         labelcolor="black", framealpha=0)
+
+for i in range(3):
+    axes[i].text(-0.05, 0.5, NAMES[i], rotation=90, va='center', ha='right',
+            transform=axes[i].transAxes, fontsize=12, fontweight="bold")
 
 
 axes[0].text(0.03, 0.87, string.ascii_uppercase[0], transform=axes[0].transAxes,
@@ -133,25 +155,26 @@ axes[1].text(0.03, 0.87, string.ascii_uppercase[3], transform=axes[1].transAxes,
         size=24, weight='bold', color="white")
 axes[2].text(0.03, 0.87, string.ascii_uppercase[6], transform=axes[2].transAxes,
         size=24, weight='bold', color="white")
-axes[3].text(0.03, 0.87, string.ascii_uppercase[9], transform=axes[3].transAxes,
-        size=24, weight='bold', color="white")
-axes[4].text(0.03, 0.87, string.ascii_uppercase[1], transform=axes[4].transAxes,
+
+axes[3].text(0.03, 0.87, string.ascii_uppercase[1], transform=axes[3].transAxes,
             size=24, weight='bold', color="black")
-axes[5].text(0.03, 0.87, string.ascii_uppercase[4], transform=axes[5].transAxes,
+axes[4].text(0.03, 0.87, string.ascii_uppercase[4], transform=axes[4].transAxes,
             size=24, weight='bold', color="black")
-axes[6].text(0.03, 0.87, string.ascii_uppercase[7], transform=axes[6].transAxes,
-            size=24, weight='bold', color="black")
-axes[7].text(0.03, 0.87, string.ascii_uppercase[10], transform=axes[7].transAxes,
+axes[5].text(0.03, 0.87, string.ascii_uppercase[7], transform=axes[5].transAxes,
             size=24, weight='bold', color="black")
 
-axes[8].text(0.03, 0.87, string.ascii_uppercase[2], transform=axes[8].transAxes,
+axes[6].text(0.03, 0.87, string.ascii_uppercase[2], transform=axes[6].transAxes,
             size=24, weight='bold', color="black")
-axes[9].text(0.03, 0.87, string.ascii_uppercase[5], transform=axes[9].transAxes,
+axes[7].text(0.03, 0.87, string.ascii_uppercase[5], transform=axes[7].transAxes,
             size=24, weight='bold', color="black")
-axes[10].text(0.03, 0.87, string.ascii_uppercase[8], transform=axes[10].transAxes,
+axes[8].text(0.03, 0.87, string.ascii_uppercase[8], transform=axes[8].transAxes,
             size=24, weight='bold', color="black")
-axes[11].text(0.03, 0.87, string.ascii_uppercase[11], transform=axes[11].transAxes,
-            size=24, weight='bold', color="black")
+# axes[9].text(0.03, 0.87, string.ascii_uppercase[5], transform=axes[9].transAxes,
+#             size=24, weight='bold', color="black")
+# axes[10].text(0.03, 0.87, string.ascii_uppercase[8], transform=axes[10].transAxes,
+#             size=24, weight='bold', color="black")
+# axes[11].text(0.03, 0.87, string.ascii_uppercase[11], transform=axes[11].transAxes,
+#             size=24, weight='bold', color="black")
 
 
 plt.savefig(f"mouse_data.pdf", dpi=300)

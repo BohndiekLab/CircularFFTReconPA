@@ -31,7 +31,6 @@ else:
     res_full["SSIM"] = []
     res_full["JSD"] = []
     res_full["HaarPSI"] = []
-    res_full["SPARSE"] = []
 
     res_limited = dict()
     res_limited["R"] = []
@@ -39,7 +38,6 @@ else:
     res_limited["SSIM"] = []
     res_limited["JSD"] = []
     res_limited["HaarPSI"] = []
-    res_limited["SPARSE"] = []
 
     files = glob.glob(get_full_view_path() + "/*.npy")
 
@@ -117,13 +115,6 @@ else:
         limited_view[~water_segmentation] = 0
         res_full["HaarPSI"].append(HaarPSI(full_view, p0))
         res_limited["HaarPSI"].append(HaarPSI(limited_view, p0))
-
-        print("\tSPARSE")
-        p0[~water_segmentation] = 0
-        full_view[~water_segmentation] = 0
-        limited_view[~water_segmentation] = 0
-        res_full["SPARSE"].append(SharpnessHaarWaveletSparsity(full_view))
-        res_limited["SPARSE"].append(SharpnessHaarWaveletSparsity(limited_view))
 
     with open("res_full.json", "w+") as jsonfile:
         json.dump(res_full, jsonfile)

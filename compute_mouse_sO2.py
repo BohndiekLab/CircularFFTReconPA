@@ -28,8 +28,6 @@ MASK_LABELS = {
 
 WAVELENGTH = np.asarray([700, 730, 750, 760, 770, 800, 820, 840, 850, 880])
 WL_CUTOFF = 7
-SO2_MIN = 50
-SO2_MAX = 80
 
 
 selection = np.s_[25:275, 50:300]
@@ -40,6 +38,7 @@ for algo_idx in range(len(ALGORITHMS)):
         res[NAMES[algo_idx]][MASK_LABELS[idx]] = []
 
 for scan in SCANS:
+    print(scan)
 
     lbl, _ = nrrd.read(f"{PATH_BASE}/data/mice/mask/Scan_{scan}-labels.nrrd")
     labels = np.ones((300, 300))
@@ -47,6 +46,7 @@ for scan in SCANS:
     labels = np.fliplr(labels)[selection]
 
     for a_idx, algo in enumerate(ALGORITHMS):
+        print("\t", algo)
         data = np.load(get_mouse_recon_path(algo) + f"/Scan_{scan}.npy")
 
         if algo != "BPH" and algo != "MB":
@@ -54,13 +54,19 @@ for scan in SCANS:
         else:
             data = np.asarray([data[i][selection] for i in range(len(data))])
 
+        data = data - np.mean(data)
+        l1 = np.linalg.norm(np.reshape(data, (-1)), ord=1) / np.size(data)
+        data = data + 4 * l1
+
         data[data <= 0] = np.nan
-        # Normalise the spectra, such that the value at 800nm is 1
+
         data = data / data[5][None, :, :]
 
         lu = np.squeeze(linear_unmixing(data[:WL_CUTOFF], WAVELENGTH[:WL_CUTOFF])) * 100
         for idx in range(1, 7):
-            res[NAMES[a_idx]][MASK_LABELS[idx]].append(np.mean(lu[labels == idx]))
+            if np.isnan(lu[labels == idx]).all():
+                continue
+            res[NAMES[a_idx]][MASK_LABELS[idx]].append(np.nanmean(lu[labels == idx]))
 
 
 def res_format(numbers: list):
