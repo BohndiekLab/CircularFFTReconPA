@@ -6,7 +6,7 @@ import glob
 import time
 
 
-def reconstruct(path, sound_speed=1535):
+def reconstruct(path, sound_speed=1525):
     pa_data = pat.PAData(IPASCInterface(PATH_IPASC_FILE))
     time_factor = 1
     detector_factor = 1

@@ -50,12 +50,16 @@ import time
 import os
 from scipy.interpolate import RectBivariateSpline
 
-from utils import ndread
-from utils import ndwrite
-from utils import npyread
+from recon_algorithms.fft.modules.utils import ndread
+from recon_algorithms.fft.modules.utils import ndwrite
+from recon_algorithms.fft.modules.utils import npyread
 #from mymath import my_bilinear_intrp
 #from mymath import my_quadrature
-from mymath import t6hat
+from recon_algorithms.fft.modules.mymath import t6hat
+
+import tracemalloc
+
+tracemalloc.start()
 
 #--------- define polar coordinate transformation, readgeom, readinverse and prepare_hankels routines
 
@@ -270,9 +274,9 @@ if(arguments >= 1):
 
 #---------------------------- read configs ---------------------------------------------------
 
-ndet,ntimes,tmax,raddet =       readgeom   ('geomCRUK.cfg')
+ndet,ntimes,tmax,raddet =       readgeom   ('F:/fft_recon_project/code/recon_algorithms/fft/geomCRUK.cfg')
 
-ndim, ndimimage, l,lhalf  =            readinverse('inverseCRUK.cfg')
+ndim, ndimimage, l,lhalf  =            readinverse('F:/fft_recon_project/code/recon_algorithms/fft/inverseCRUK.cfg')
 
 
 #---------------------------- read data ------------------------------------------------------
@@ -478,6 +482,13 @@ np.save(name_small_npy,imagesmall)
 
 ndwrite(imagesmall,'small_inv.d')
 ndwrite(image_ext,'fast_inv.d')
+
+snapshot = tracemalloc.take_snapshot()
+stats = snapshot.statistics('lineno')
+current, peak = tracemalloc.get_traced_memory()
+print(f"Current Memory Usage: {current / (1024 * 1024):.2f} MB")
+print(f"Peak Memory Usage: {peak / (1024 * 1024):.2f} MB")
+tracemalloc.stop()
 
 
 

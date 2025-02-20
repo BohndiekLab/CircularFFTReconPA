@@ -44,8 +44,8 @@ def populate_subplot(data, normalise, subfig):
             axes[idx].set_ylim(np.nanpercentile(values, 0.2), np.nanpercentile(values, 99.5))
 
 
-populate_subplot("sim_raw", False, subfigs[0, 0])
-populate_subplot("sim_raw", True, subfigs[0, 1])
+populate_subplot("sim", False, subfigs[0, 0])
+populate_subplot("sim", True, subfigs[0, 1])
 populate_subplot("exp", False, subfigs[1, 0])
 populate_subplot("exp", True, subfigs[1, 1])
 

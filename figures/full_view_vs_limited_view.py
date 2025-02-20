@@ -10,17 +10,18 @@ import json
 import glob
 import os
 from measures.measures import StructuralSimilarityIndex, MedianAbsoluteError, \
-    JensenShannonDivergence, SharpnessHaarWaveletSparsity, HaarPSI
+    JensenShannonDivergence, HaarPSI
 from scipy.stats import linregress
 
 SPACING = 0.10666666667
+ALGORITHM = "fft"
 
-if os.path.exists("res_full.json") and os.path.exists("res_limited.json"):
+if os.path.exists(f"res_full_{ALGORITHM}.json") and os.path.exists(f"res_limited_{ALGORITHM}.json"):
 
-    with open("res_full.json", "r+") as jsonfile:
+    with open(f"res_full_{ALGORITHM}.json", "r+") as jsonfile:
         res_full = json.load(jsonfile)
 
-    with open("res_limited.json", "r+") as jsonfile:
+    with open(f"res_limited_{ALGORITHM}.json", "r+") as jsonfile:
         res_limited = json.load(jsonfile)
 
 else:
@@ -39,9 +40,9 @@ else:
     res_limited["JSD"] = []
     res_limited["HaarPSI"] = []
 
-    files = glob.glob(get_full_view_path() + "/*.npy")
+    files = glob.glob(get_full_view_path(ALGORITHM) + "/*.npy")
 
-    slope, intercept, r = calibrate_to_p0("fft", "sim_raw")
+    slope, intercept, r = calibrate_to_p0(ALGORITHM, "sim_raw")
     print(slope)
     print(intercept)
     print(r)
@@ -50,10 +51,10 @@ else:
         filename = file.split("\\")[-1].split("/")[-1]
         print(filename)
         full_view = np.load(file)
-        if os.path.exists(get_recon_path("testing", "sim_raw", "fft") + f"/{filename}"):
-            limited_view = np.load(get_recon_path("testing", "sim_raw", "fft") + f"/{filename}")
+        if os.path.exists(get_recon_path("testing", "sim_raw", ALGORITHM) + f"/{filename}"):
+            limited_view = np.load(get_recon_path("testing", "sim_raw", ALGORITHM) + f"/{filename}")
         else:
-            limited_view = np.load(get_recon_path("calibration", "sim_raw", "fft") + f"/{filename}")
+            limited_view = np.load(get_recon_path("calibration", "sim_raw", ALGORITHM) + f"/{filename}")
 
         if os.path.exists(get_p0_path("testing") + f"/{filename}"):
             p0 = np.load(get_p0_path("testing") + f"/{filename}")
@@ -116,15 +117,15 @@ else:
         res_full["HaarPSI"].append(HaarPSI(full_view, p0))
         res_limited["HaarPSI"].append(HaarPSI(limited_view, p0))
 
-    with open("res_full.json", "w+") as jsonfile:
+    with open(f"res_full_{ALGORITHM}.json", "w+") as jsonfile:
         json.dump(res_full, jsonfile)
 
-    with open("res_limited.json", "w+") as jsonfile:
+    with open(f"res_limited_{ALGORITHM}.json", "w+") as jsonfile:
         json.dump(res_limited, jsonfile)
 
 example_p0 = np.load(get_p0_path("testing") + "/P.5.24_800.npy").T
-example_limited = np.load(get_recon_path(data_set="testing", data="sim_raw", algorithm="fft") + "/P.5.24_800.npy").T
-example_full = np.load(get_full_view_path() + "/P.5.24_800.npy").T
+example_limited = np.load(get_recon_path(data_set="testing", data="sim_raw", algorithm=ALGORITHM) + "/P.5.24_800.npy").T
+example_full = np.load(get_full_view_path(ALGORITHM) + "/P.5.24_800.npy").T
 
 example_limited = example_limited - np.min(example_limited)
 example_full = example_full - np.min(example_full)
@@ -171,6 +172,6 @@ ax3.text(0.03, 0.9, string.ascii_uppercase[2], transform=ax3.transAxes,
 ax4.text(0.03, 0.9, string.ascii_uppercase[3], transform=ax4.transAxes,
         size=24, weight='bold', color="white")
 
-plt.savefig(f"full_view_vs_limited_view.pdf", dpi=300)
+plt.savefig(f"full_view_vs_limited_view_{ALGORITHM}.pdf", dpi=300)
 
 plt.show()

@@ -13,8 +13,8 @@ ALGORITHMS = ["MB", "ITTR_interp", "FFT"]
 NAMES = ["Model-based",
          "Iterative time reversal",
          "Circular FFT"]
-data_sources = ["sim_raw", "exp"]
-EXAMPLE_IMAGE_IDX = "12"
+data_sources = ["sim", "exp"]
+EXAMPLE_IMAGE_IDX = "19"
 
 fig, axes = plt.subplots(3, 2, figsize=(5.5, 8), layout="constrained")
 
