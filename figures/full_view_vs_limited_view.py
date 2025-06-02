@@ -14,7 +14,7 @@ from measures.measures import StructuralSimilarityIndex, MedianAbsoluteError, \
 from scipy.stats import linregress
 
 SPACING = 0.10666666667
-ALGORITHM = "fft"
+ALGORITHM = "mb"
 
 if os.path.exists(f"res_full_{ALGORITHM}.json") and os.path.exists(f"res_limited_{ALGORITHM}.json"):
 

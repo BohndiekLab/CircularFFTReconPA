@@ -20,9 +20,11 @@ ALGO_TEXT = ["Model-based", "Iterative time reversal", "Circular FFT"]
 fig, axes = plt.subplots(3, 2, layout="constrained", figsize=(5.5, 8.25))
 
 for idx, (ALGORITHM, ax) in enumerate(zip(ALGORITHMS, axes)):
-    print(idx)
+    print(idx, ALGORITHM)
     example_limited = np.load(get_recon_path(data_set="testing", data="sim_raw", algorithm=ALGORITHM) + "/P.5.24_800.npy").T
     example_full = np.load(get_full_view_path(ALGORITHM) + "/P.5.24_800.npy").T
+    print("\t", np.min(example_full))
+    print("\t", np.min(example_limited))
 
     example_limited = example_limited - np.min(example_limited)
     example_full = example_full - np.min(example_full)

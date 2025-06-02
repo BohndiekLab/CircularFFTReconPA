@@ -31,7 +31,7 @@ def reconstruct(path, sound_speed=1488):
                     "model_c": sound_speed,
                     "model_irf": None,
                     "model_nt": 2030,
-                    "model_constraint": "none"
+                    "constraint": "none"
                     }
 
     m = JAXModelBasedReconstruction(field_of_view=(0.032, 0., 0.032), n_pixels=(300, 1, 300), **model_params)

@@ -113,6 +113,7 @@ y_text = y_bar  # Position for text
 ax2.plot([1.0, 2.0], [y_bar, y_bar], color='black')  # Horizontal line
 ax2.text(1.5, y_text, f"***", ha='center', fontsize=12)
 
+ax_top.plot(sim_raw_phantom[EXAMPLE_DETECTOR_1], c="black", label="naïve")
 ax_top.plot(sim_phantom[EXAMPLE_DETECTOR_1], c="blue", label="calibrated simulation")
 ax_top.plot(exp_phantom[EXAMPLE_DETECTOR_1], c="green", label="experiment")
 ax_top.spines[["right", "top"]].set_visible(False)

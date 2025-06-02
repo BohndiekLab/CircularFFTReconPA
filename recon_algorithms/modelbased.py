@@ -27,7 +27,7 @@ def reconstruct(path, sound_speed=1488):
                     "model_c": sound_speed,
                     "model_irf": None,
                     "model_nt": 2030,
-                    "model_constraint": "none"
+                    "constraint": "none"
                     }
 
     m = JAXModelBasedReconstruction(field_of_view=(0.032, 0., 0.032), n_pixels=(300, 1, 300), **model_params)
@@ -36,6 +36,20 @@ def reconstruct(path, sound_speed=1488):
     return (np.asarray(np.squeeze(recon.raw_data))).copy()
 
 for data_source in DATA_SOURCES:
+
+    times = []
+    # reconstruct sim_raw
+    for file in glob.glob(get_raw_path(data_source, "sim") + "/*.npy"):
+        print(file)
+        save_file_path = file.replace("raw/sim", "recons/mb/sim")
+        t = time.time()
+        recon = reconstruct(file).T
+        times.append(time.time() - t)
+        np.save(save_file_path, recon)
+    times = np.asarray(times)
+    print(times)
+    print(np.mean(times[1:]), np.std(times[1:]))
+
     times = []
     # reconstruct sim_raw
     for file in glob.glob(get_raw_path(data_source, "sim_raw") + "/*.npy"):
