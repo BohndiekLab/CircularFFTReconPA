@@ -4,7 +4,7 @@
 Janek Gröhl<sup>1,2,3</sup>, 
 Leonid Kunyansky<sup>4</sup>, 
 Jenni Poimala<sup>5</sup>, 
-Thomas R. Else<sup>6</sup>, 
+Thomas R. Else<sup>1,2,6</sup>, 
 Francesca Di Cecio<sup>1,2</sup>, 
 Sarah E. Bohndiek<sup>1,2</sup>, 
 Ben T. Cox<sup>7</sup>, and 
@@ -57,12 +57,12 @@ project_root/
 The **`code/`** directory contains Python scripts and modules implementing the image reconstruction algorithms and supporting utilities for data processing and analysis. The repository includes multiple reconstruction methods:
 **back-projection (BP)**, **Hilbert back-projection (BPH)**, **time reversal (TR)**, **iterative time reversal (ITTR)**, **model-based reconstruction (MB)**, and a **fast Fourier transform-based (FFT) reconstruction** algorithm for circular sensor geometries. Each method has a dedicated script or function in `code/` for performing the reconstruction on the input data. 
 
-Configuration of paths and parameters is centralized in `utils/constants.py`. **Before running any reconstruction, open this file and adjust the file paths** to point to your local `data/` directory (and any other system-specific constants, such as the speed of sound or sampling parameters). This ensures the code knows where to find the input files and where to save outputs.
+Configuration of paths and parameters is centralised in `utils/constants.py`. **Before running any reconstruction, open this file and adjust the file paths** to point to your local `data/` directory. This ensures the code knows where to find the input files and where to save outputs.
 
 Typical usage workflow:
 1. **Run reconstruction scripts:** Execute the scripts for each reconstruction algorithm to generate reconstructed images. For example, running the FFT reconstruction script will read the time-series data from `data/.../raw/` and produce reconstructed images in `data/.../recons/fft/`. Similarly, run the BP, TR, ITTR, MB, and BPH reconstruction scripts to populate their respective subfolders. Each script uses the experimental (`exp`) or simulated (`sim`/`sim_raw`) data as input and saves the reconstructed image files (e.g., as NumPy arrays or images) in the corresponding algorithm’s folder under `recons`.
 2. **Compute IQA metrics:** After all reconstructions are obtained, use the provided IQA (image quality assessment) module to calculate full-reference quality metrics. This step will compare each reconstructed image against the ground truth image from `p0/` (the “reference” provided by the digital twin) and compute metrics such as PSNR, SSIM, and other figures of merit. The metrics can be computed for both the simulated data (where ground truth is known) and, by extension, help evaluate how well the calibration holds for experimental reconstructions. The results of this step might be saved as a table or CSV, or printed to the console, depending on the implementation.
-3. **Visualization:** Finally, run the visualization or plotting scripts to generate figures that compare the different reconstruction methods. These scripts can create side-by-side image comparisons, difference images, or plots of the IQA metrics for each algorithm. This helps reproduce the figures and quantitative comparisons presented in the paper. For instance, you might generate a figure showing all reconstructions for a given phantom, or a bar chart of the SSIM/PSNR values of all methods on the testing set. Adjust the plotting scripts as needed to point to the results obtained in the previous steps.
+3. **Visualisation:** Finally, run the visualisation or plotting scripts to generate figures that compare the different reconstruction methods. These scripts can create side-by-side image comparisons, difference images, or plots of the IQA metrics for each algorithm. This helps reproduce the figures and quantitative comparisons presented in the paper. For instance, you might generate a figure showing all reconstructions for a given phantom, or a bar chart of the SSIM/PSNR values of all methods on the testing set. Adjust the plotting scripts as needed to point to the results obtained in the previous steps.
 
 ## Citation
 If you use this code or data in your research, please cite the corresponding paper:
@@ -71,16 +71,14 @@ Janek Gröhl *et al.*, **“Digital twins enable full-reference quality assessme
 
 All data and code are publicly available on Zenodo: https://doi.org/10.5281/zenodo.15388429
 
-## License and Acknowledgments
+## License and Acknowledgements
 This project is released under the **MIT License** (see the `LICENSE` file for details).
 
-**Funding Acknowledgments:** Development of this code and the underlying research were supported by multiple grants:
+**Funding Acknowledgements:** Development of this code and the underlying research were supported by multiple grants:
 - **Deutsche Forschungsgemeinschaft (DFG)** – projects GR 5824/1 and GR 5824/2 (supporting J.G.).  
 - **U.S. National Science Foundation (NSF)** – award DMS-2405348 (supporting L.K.).  
-- **Cancer Research UK (CRUK)** – grant A29580 (supporting T.R.E.).  
+- **Cancer Research UK (CRUK)** – A29580 (supporting T.R.E.).  
 - **Research Council of Finland** – Flagship programme projects 359186 and 358944, Centre of Excellence projects 353093 and 353086, and Academy Research Fellow project 338408 (supporting A.H. and J.P.).  
 - **European Research Council (ERC)** – European Union Horizon 2020 programme, grant 101001417 (*QUANTOM* project, supporting J.P.).  
 - **Finnish Ministry of Education and Culture** – support for a doctoral programme pilot *“Mathematics of Sensing, Imaging and Modelling”* (supporting J.P.).  
-- **Engineering and Physical Sciences Research Council (EPSRC), UK** – grants EP/W029324/1 and EP/T014369/1 (supporting B.T.C.), as well as EP/R014604/1 which provided support for the Isaac Newton Institute’s **“Rich and Nonlinear Tomography”** programme.  
-
-*Acknowledgments:* The authors thank the **Isaac Newton Institute for Mathematical Sciences, University of Cambridge**, for hospitality and support during the *Rich and Nonlinear Tomography* programme, where fruitful discussions contributing to this work took place.
+- **Engineering and Physical Sciences Research Council (EPSRC), UK** – grants EP/W029324/1 and EP/T014369/1 (supporting B.T.C.), as well as EP/R014604/1, which provided support for the Isaac Newton Institute’s **“Rich and Nonlinear Tomography”** programme.  
