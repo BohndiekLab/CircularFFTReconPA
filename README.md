@@ -67,6 +67,7 @@ Typical usage workflow:
 ## Citation
 If you use this code or data in your research, please cite the corresponding paper:
 
+arXiv preprint:
 Janek Gröhl *et al.*, **“Digital twins enable full-reference quality assessment of photoacoustic image reconstructions,”** arXiv preprint arXiv:2505.24514 (2025).
 
 All data and code are publicly available on Zenodo: https://doi.org/10.5281/zenodo.15388429
