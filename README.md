@@ -55,7 +55,8 @@ project_root/
 
 ## Code Overview
 The **`code/`** directory contains Python scripts and modules implementing the image reconstruction algorithms and supporting utilities for data processing and analysis. The repository includes multiple reconstruction methods:
-**back-projection (BP)**, **Hilbert back-projection (BPH)**, **time reversal (TR)**, **iterative time reversal (ITTR)**, **model-based reconstruction (MB)**, and a **fast Fourier transform-based (FFT) reconstruction** algorithm for circular sensor geometries. Each method has a dedicated script or function in `code/` for performing the reconstruction on the input data. 
+**Delay and Sum**, **Filtered back-projection**, **model-based reconstruction (MB)**, and a **fast Fourier transform-based (FFT) reconstruction** algorithm for circular sensor geometries. Each method has a dedicated script or function in `code/` for performing the reconstruction on the input data. 
+Please note that the **time reversal (TR)** and **iterative time reversal (ITTR)** algorithms are not included in this repository, but the reconstruction results are included in the data on Zenodo to allow reproducing the results.
 
 Configuration of paths and parameters is centralised in `utils/constants.py`. **Before running any reconstruction, open this file and adjust the file paths** to point to your local `data/` directory. This ensures the code knows where to find the input files and where to save outputs.
 
