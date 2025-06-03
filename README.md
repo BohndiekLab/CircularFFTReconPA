@@ -58,8 +58,8 @@ The **`code/`** directory contains Python scripts and modules implementing the i
 **Delay and Sum**, **Filtered back-projection**, **model-based reconstruction (MB)**, and a **fast Fourier transform-based (FFT) reconstruction** algorithm for circular sensor geometries. Each method has a dedicated script or function in `code/recon_algorithms` for performing the reconstruction on the input data.
 - **Delay and Sum**: `code/recon_algorithms/backprojection.py`
 - **Filtered back-projection**: `code/recon_algorithms/backprojection_hilbert.py`
-- **model-based reconstruction (MB)**: `code/recon_algorithms/modelbased.py`
-- **fast Fourier transform-based (FFT) reconstruction**: `code/recon_algorithms/fft/fast_inverse_CRUK.py`
+- **Model-based reconstruction (MB)**: `code/recon_algorithms/modelbased.py`
+- **Fast Fourier transform-based (FFT) reconstruction**: `code/recon_algorithms/fft/fast_inverse_CRUK.py`
 
 > [!CAUTION]
 > Please note that the **time reversal (TR)** and **iterative time reversal (ITTR)** algorithms are not included in this repository, but the reconstruction results are included in the data on Zenodo to allow reproducing the results.
