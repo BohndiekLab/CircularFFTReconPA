@@ -70,7 +70,7 @@ If you use this code or data in your research, please cite the corresponding pap
 arXiv preprint:
 Janek Gröhl *et al.*, **“Digital twins enable full-reference quality assessment of photoacoustic image reconstructions,”** arXiv preprint arXiv:2505.24514 (2025).
 
-All data and code are publicly available on Zenodo: https://doi.org/10.5281/zenodo.15388429
+All data and a snapshot of this code repository are publicly available on Zenodo: https://doi.org/10.5281/zenodo.15388429
 
 ## License and Acknowledgements
 This project is released under the **MIT License** (see the `LICENSE` file for details).
