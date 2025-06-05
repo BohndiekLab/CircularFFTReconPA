@@ -94,4 +94,5 @@ This project is released under the **MIT License** (see the `LICENSE` file for d
 - **Research Council of Finland** – Flagship programme projects 359186 and 358944, Centre of Excellence projects 353093 and 353086, and Academy Research Fellow project 338408 (supporting A.H. and J.P.).  
 - **European Research Council (ERC)** – European Union Horizon 2020 programme, grant 101001417 (*QUANTOM* project, supporting J.P.).  
 - **Finnish Ministry of Education and Culture** – support for a doctoral programme pilot *“Mathematics of Sensing, Imaging and Modelling”* (supporting J.P.).  
-- **Engineering and Physical Sciences Research Council (EPSRC), UK** – grants EP/W029324/1 and EP/T014369/1 (supporting B.T.C.), as well as EP/R014604/1, which provided support for the Isaac Newton Institute’s **“Rich and Nonlinear Tomography”** programme.  
+- **Engineering and Physical Sciences Research Council (EPSRC), UK** – grants EP/W029324/1 and EP/T014369/1 (supporting B.T.C.), as well as EP/R014604/1, which provided support for the Isaac Newton Institute’s **“Rich and Nonlinear Tomography”** programme.
+- **Physics of Life Network Phase 3 (PoLNET3)** – summer 2023 student bursary *“Calibrating numerical photoacoustic forward models with experimental measurements”* (supporting F.D.C.).
