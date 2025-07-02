@@ -29,21 +29,20 @@ Using this digital twin, the paper quantitatively compares multiple state-of-the
 ## Data Structure
 ```
 project_root/
-├── code/
-├── data/
-│   ├── calibration/
-│   │   ├── p0/
-│   │   ├── raw/
-│   │   └── recons/
-│   │       ├── bp/
-│   │       ├── bph/
-│   │       ├── fft/
-│   │       ├── ittr/
-│   │       ├── mb/
-│   │       └── tr/
-│   ├── full_view/
-│   └── testing/
-│       └── ... (same structure as calibration)
+
+├── calibration/
+│   ├── p0/
+│   ├── raw/
+│   └── recons/
+│       ├── bp/
+│       ├── bph/
+│       ├── fft/
+│       ├── ittr/
+│       ├── mb/
+│       └── tr/
+├── full_view/
+└── testing/
+    └── ... (same structure as calibration)
 ```
 - **`p0/`** – Simulated initial pressure distributions (NumPy `.npy` files), representing the ground-truth initial pressure images of the phantoms.
 - **`raw/`** – Time-series photoacoustic signal measurements. This folder is further divided into:
@@ -54,7 +53,7 @@ project_root/
 - **`calibration/`**, **`full_view/`**, and **`testing/`** – These are three datasets or experiment categories provided under `data/`. Each of these directories contains the same internal subdirectory structure as shown for `calibration/` above. For instance, `full_view/` and `testing/` each contain their own `p0`, `raw`, and `recons` subfolders (with the same breakdown of algorithms under `recons`). The **calibration** dataset is used to calibrate the simulations to the real system, **full_view** may contain simulations with full view (complete sensor coverage) for reference, and **testing** contains the test phantoms/data used for evaluating reconstruction performance.
 
 ## Code Overview
-The **`code/`** directory contains Python scripts and modules implementing the image reconstruction algorithms and supporting utilities for data processing and analysis. The repository includes multiple reconstruction methods:
+The code contains Python scripts and modules implementing the image reconstruction algorithms and supporting utilities for data processing and analysis. The repository includes multiple reconstruction methods:
 **Delay and Sum**, **Filtered back-projection**, **model-based reconstruction (MB)**, and a **fast Fourier transform-based (FFT) reconstruction** algorithm for circular sensor geometries. Each method has a dedicated script or function in `code/recon_algorithms` for performing the reconstruction on the input data.
 - **Delay and Sum**: `code/recon_algorithms/backprojection.py`
 - **Filtered back-projection**: `code/recon_algorithms/backprojection_hilbert.py`
