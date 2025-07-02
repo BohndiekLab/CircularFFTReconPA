@@ -22,39 +22,30 @@ Andreas Hauptmann<sup>8,9</sup>
 9. Department of Computer Science, University College London, U.K.  
 
 ## Summary
-**Digital twins for photoacoustic imaging:** This repository accompanies the paper, which introduces a *digital twin* framework to enable full-reference image quality assessment (IQA) in photoacoustic tomography. In conventional experiments, quantitative comparison of reconstruction algorithms is challenging because no-reference IQA measures are often inadequate, and full-reference measures require a known ideal reference image (which is unavailable for real tissue or physical phantoms). The paper’s approach overcomes this by using numerical *tissue-mimicking phantoms* and a model of the imaging system as a **digital twin** of the experiment. By calibrating the simulations to match experimental data, the authors create a reference object that is close to a “ground truth” and corresponding simulated sensor data that mimic the real experiment, thus reducing the *simulation-experiment gap*.
+**Digital twins for photoacoustic imaging:** This repository accompanies the paper, which introduces a *digital twin* 
+framework to enable full-reference image quality assessment (IQA) in photoacoustic tomography. In conventional 
+experiments, quantitative comparison of reconstruction algorithms is challenging because no-reference IQA measures 
+are often inadequate, and full-reference measures require a known ideal reference image (which is unavailable for 
+real tissue or physical phantoms). The paper’s approach overcomes this by using numerical *tissue-mimicking phantoms* 
+and a model of the imaging system as a **digital twin** of the experiment. By calibrating the simulations to match 
+experimental data, the authors create a reference object that is close to a “ground truth” and corresponding 
+simulated sensor data that mimic the real experiment, thus reducing the *simulation-experiment gap*.
 
-Using this digital twin, the paper quantitatively compares multiple state-of-the-art image reconstruction algorithms for photoacoustic imaging. Among these is a fast Fourier transform-based reconstruction algorithm for circular detection geometries, which is **tested on experimental data for the first time**. The results demonstrate that the digital phantom twin approach enables rigorous, full-reference IQA of reconstructions: for example, the Fourier algorithm achieved image quality comparable to iterative time reversal but at significantly lower computational cost. This highlights the utility of the digital twin framework for assessing reconstruction accuracy and the fidelity of the forward model, facilitating fair comparisons of different algorithms.
-
-## Data Structure
-```
-project_root/
-
-├── calibration/
-│   ├── p0/
-│   ├── raw/
-│   └── recons/
-│       ├── bp/
-│       ├── bph/
-│       ├── fft/
-│       ├── ittr/
-│       ├── mb/
-│       └── tr/
-├── full_view/
-└── testing/
-    └── ... (same structure as calibration)
-```
-- **`p0/`** – Simulated initial pressure distributions (NumPy `.npy` files), representing the ground-truth initial pressure images of the phantoms.
-- **`raw/`** – Time-series photoacoustic signal measurements. This folder is further divided into:
-  - **`exp/`** – Experimental measurements (recorded sensor data from real experiments).  
-  - **`sim/`** – Calibrated simulations (simulated sensor data after calibration to match the experimental setup).  
-  - **`sim_raw/`** – Uncalibrated simulations (initial simulated sensor data before any calibration).
-- **`recons/`** – Reconstructed images produced by various reconstruction algorithms. Each algorithm has its own subfolder (e.g. `bp`, `bph`, `fft`, `ittr`, `mb`, `tr`), each containing the reconstructions corresponding to the data in the `raw` folder (often organized with a similar substructure or file naming to indicate `exp`, `sim`, `sim_raw` results).
-- **`calibration/`**, **`full_view/`**, and **`testing/`** – These are three datasets or experiment categories provided under `data/`. Each of these directories contains the same internal subdirectory structure as shown for `calibration/` above. For instance, `full_view/` and `testing/` each contain their own `p0`, `raw`, and `recons` subfolders (with the same breakdown of algorithms under `recons`). The **calibration** dataset is used to calibrate the simulations to the real system, **full_view** may contain simulations with full view (complete sensor coverage) for reference, and **testing** contains the test phantoms/data used for evaluating reconstruction performance.
+Using this digital twin, the paper quantitatively compares multiple state-of-the-art image reconstruction algorithms 
+for photoacoustic imaging. Among these is a fast Fourier transform-based reconstruction algorithm for circular 
+detection geometries, which is **tested on experimental data for the first time**. The results demonstrate that 
+the digital phantom twin approach enables rigorous, full-reference IQA of reconstructions: for example, the Fourier 
+algorithm achieved image quality comparable to iterative time reversal but at significantly lower computational cost. 
+This highlights the utility of the digital twin framework for assessing reconstruction accuracy and the fidelity of 
+the forward model, facilitating fair comparisons of different algorithms.
 
 ## Code Overview
-The code contains Python scripts and modules implementing the image reconstruction algorithms and supporting utilities for data processing and analysis. The repository includes multiple reconstruction methods:
-**Delay and Sum**, **Filtered back-projection**, **model-based reconstruction (MB)**, and a **fast Fourier transform-based (FFT) reconstruction** algorithm for circular sensor geometries. Each method has a dedicated script or function in `code/recon_algorithms` for performing the reconstruction on the input data.
+The code contains Python scripts and modules implementing the image reconstruction algorithms and supporting 
+utilities for data processing and analysis. The repository includes multiple reconstruction methods:
+**Delay and Sum**, **Filtered back-projection**, **model-based reconstruction (MB)**, and a **fast Fourier 
+transform-based (FFT) reconstruction** algorithm for circular sensor geometries. Each method has a dedicated 
+script or function in `code/recon_algorithms` for performing the reconstruction on the input data.
+
 - **Delay and Sum**: `code/recon_algorithms/backprojection.py`
 - **Filtered back-projection**: `code/recon_algorithms/backprojection_hilbert.py`
 - **Model-based reconstruction (MB)**: `code/recon_algorithms/modelbased.py`
@@ -70,21 +61,23 @@ Typical usage workflow:
 2. **Compute IQA metrics:** After all reconstructions are obtained, use the provided `compute_measures.py` script to calculate full-reference quality metrics. This step will compare each reconstructed image against the ground truth image from `p0/` (the “reference” provided by the digital twin) and compute metrics such as PSNR, SSIM, and other figures of merit. The metrics can be computed for both the simulated data (where ground truth is known) and, by extension, help evaluate how well the calibration holds for experimental reconstructions. The results of this step might be saved as a table or CSV, or printed to the console, depending on the implementation. By changing the `data_source` parameter from (`exp`) to (`sim`/`sim_raw`), it can be controlled whether the measures should be computed on the experimental or simulated data sets.
 3. **Visualisation:** Finally, run the visualisation or plotting scripts to generate figures that compare the different reconstruction methods. These scripts can create side-by-side image comparisons, difference images, or plots of the IQA metrics for each algorithm. This helps reproduce the figures and quantitative comparisons presented in the paper. For instance, you might generate a figure showing all reconstructions for a given phantom, or a bar chart of the SSIM/PSNR values of all methods on the testing set. There are dedicated scripts for each figure of the manuscript:
 
-- `compare_reconstructions.py` - Figure 4 in the manuscript
-- `full_view_vs_limited_view.py` - Figure 5 A: First run this for model-based, iterative time reversal and FFT-based reconstruction.
-- `full_view_vs_limited_view_overview.py` - Figure 5 B: Afterwards, this script reproduces Figure 5 in the manuscript.
-- `show_forward_model_accuracy.py` - Figure 3 in the manuscript
+- `compare_reconstructions.py` - **Figure 4** in the manuscript
+- `full_view_vs_limited_view.py` - **Figure 5 Step A**: First run this for model-based, iterative time reversal and FFT-based reconstruction.
+- `full_view_vs_limited_view_overview.py` - **Figure 5 Step B**: Afterwards, this script reproduces Figure 5 in the manuscript.
+- `show_forward_model_accuracy.py` - **Figure 3** in the manuscript
 
 ## Citation
 If you use this code or data in your research, please cite the corresponding paper:
 
-arXiv preprint:
 Janek Gröhl *et al.*, **“Digital twins enable full-reference quality assessment of photoacoustic image reconstructions,”** arXiv preprint arXiv:2505.24514 (2025).
 
-All data and a snapshot of this code repository are publicly available on Zenodo: https://doi.org/10.5281/zenodo.15388429
+## Data
+All data are publicly available on Zenodo: https://doi.org/10.5281/zenodo.15388429
 
-## License and Acknowledgements
+## License
 This project is released under the **MIT License** (see the `LICENSE` file for details).
+
+## Acknowledgements
 
 **Funding Acknowledgements:** Development of this code and the underlying research were supported by multiple grants:
 - **Deutsche Forschungsgemeinschaft (DFG)** – projects GR 5824/1 and GR 5824/2 (supporting J.G.).  
